@@ -1,1349 +1,1020 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-50">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Portal Puskesmas Integrated System</title>
-    <!-- Tailwind CSS -->
+    <title>E-Portal Puskesmas Modern - UPT Puskesmas Sentolo II</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Google Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59',
-                            900: '#134e4a',
-                        },
-                        medical: {
-                            blue: '#0284c7',
-                            darkBlue: '#0369a1',
-                            light: '#e0f2fe',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(229, 231, 235, 0.8);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 0.4; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-        .pulse-effect {
-            animation: pulse-ring 2s infinite ease-in-out;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .sidebar-item-active { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="h-full text-slate-800 font-sans antialiased flex flex-col bg-slate-100 selection:bg-brand-500 selection:text-white">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-50">
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
-
-    <!-- LOGIN VIEW -->
-    <div id="login-screen" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-900 via-slate-900 to-slate-950">
-        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-700/50">
-            <!-- Header Login -->
-            <div class="bg-gradient-to-r from-brand-700 to-teal-800 p-6 text-center text-white relative">
-                <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-3 border border-white/20 shadow-inner">
-                    <i class="fa-solid fa-hospital-user text-3xl text-teal-200"></i>
+    <!-- LOGIN OVERLAY / MODAL -->
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-slate-100 relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl"></div>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-tr from-teal-600 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-teal-500/30 text-white text-2xl font-bold">
+                    <i class="fa-solid font-hospital-user"></i>
+                    <i class="fa-solid fa-notes-medical"></i>
                 </div>
-                <h2 class="text-2xl font-bold tracking-tight">E-PORTAL PUSKESMAS</h2>
-                <p class="text-xs text-teal-100 mt-1">Sistem Layanan Presensi & Tata Kelola Internal</p>
+                <h2 class="text-2xl font-extrabold text-slate-800">E-Portal Puskesmas</h2>
+                <p class="text-xs text-slate-500 mt-1 font-medium">UPT Puskesmas Sentolo II - Sistem Informasi & Manajemen</p>
             </div>
 
-            <!-- Login Form -->
-            <form id="login-form" onsubmit="handleLogin(event)" class="p-6 space-y-4">
-                <div id="login-error-msg" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation text-base"></i>
-                    <span id="login-error-text">Username atau password salah!</span>
-                </div>
-
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Username / NIP</label>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Username / NIP/Nama</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                            <i class="fa-solid fa-user"></i>
-                        </span>
-                        <input type="text" id="login-username" required placeholder="Masukkan username..." class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none font-medium">
+                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="loginUsername" placeholder="Masukkan username" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Kata Sandi</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                            <i class="fa-solid fa-key"></i>
-                        </span>
-                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none font-medium">
-                    </div>
+                <div id="loginError" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 font-medium flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="loginErrorMsg">Username atau Password salah!</span>
                 </div>
 
-                <div class="flex items-center justify-between text-xs">
-                    <label class="flex items-center gap-2 cursor-pointer text-slate-600">
-                        <input type="checkbox" id="remember-me" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-                        <span>Ingat Sesi Saya</span>
-                    </label>
-                    <a href="#" onclick="showToast('Bantuan Password', 'Silakan hubungi Unit Administrator IT Puskesmas.', 'info')" class="text-brand-600 font-semibold hover:underline">Lupa Sandi?</a>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2">
-                    <span>Masuk Ke Sistem</span>
-                    <i class="fa-solid fa-right-to-bracket"></i>
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-teal-600/30 transition-all flex items-center justify-center gap-2">
+                    <span>Masuk ke Portal</span>
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
                 </button>
             </form>
 
-            <!-- Kredensial Demo Card -->
-            <div class="bg-slate-50 p-4 border-t border-slate-100 space-y-2">
-                <p class="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
-                    <i class="fa-solid fa-key text-brand-600"></i> Akun Login Demo (Klik Cepat):
-                </p>
-                <div class="grid grid-cols-2 gap-1.5 text-[10px]">
-                    <button onclick="fillDemoAccount('admin', 'admin123')" class="p-2 bg-white hover:bg-brand-50 border border-slate-200 rounded-lg text-left transition flex flex-col">
-                        <span class="font-bold text-slate-800">1. Admin</span>
-                        <span class="text-slate-500">admin / admin123</span>
-                    </button>
-                    <button onclick="fillDemoAccount('kapus', 'kapus123')" class="p-2 bg-white hover:bg-brand-50 border border-slate-200 rounded-lg text-left transition flex flex-col">
-                        <span class="font-bold text-slate-800">2. Ka. Puskesmas</span>
-                        <span class="text-slate-500">kapus / kapus123</span>
-                    </button>
-                    <button onclick="fillDemoAccount('dokter', 'dokter123')" class="p-2 bg-white hover:bg-brand-50 border border-slate-200 rounded-lg text-left transition flex flex-col">
-                        <span class="font-bold text-slate-800">3. Dokter</span>
-                        <span class="text-slate-500">dokter / dokter123</span>
-                    </button>
-                    <button onclick="fillDemoAccount('perawat', 'perawat123')" class="p-2 bg-white hover:bg-brand-50 border border-slate-200 rounded-lg text-left transition flex flex-col">
-                        <span class="font-bold text-slate-800">4. Perawat</span>
-                        <span class="text-slate-500">perawat / perawat123</span>
-                    </button>
+            <div class="mt-6 pt-5 border-t border-slate-100">
+                <p class="text-xs font-semibold text-slate-500 mb-2">Akun Demo (Dari Excel Japel):</p>
+                <div class="grid grid-cols-2 gap-1.5 text-[11px] text-slate-600 font-mono">
+                    <div class="p-1.5 bg-slate-100 rounded border hover:bg-slate-200 cursor-pointer" onclick="quickFill('hannie', 'hannie123')">
+                        <strong>Kapus:</strong> hannie / hannie123
+                    </div>
+                    <div class="p-1.5 bg-slate-100 rounded border hover:bg-slate-200 cursor-pointer" onclick="quickFill('anggraeni', 'anggraeni123')">
+                        <strong>Ka TU / Admin:</strong> anggraeni / anggraeni123
+                    </div>
+                    <div class="p-1.5 bg-slate-100 rounded border hover:bg-slate-200 cursor-pointer" onclick="quickFill('sajarwadi', 'sajarwadi123')">
+                        <strong>Dokter:</strong> sajarwadi / sajarwadi123
+                    </div>
+                    <div class="p-1.5 bg-slate-100 rounded border hover:bg-slate-200 cursor-pointer" onclick="quickFill('taufik', 'taufik123')">
+                        <strong>Perawat:</strong> taufik / taufik123
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
-    <div id="app" class="flex h-screen overflow-hidden hidden">
-
+    <!-- MAIN APP WRAPPER -->
+    <div id="appContainer" class="flex-1 flex overflow-hidden hidden">
         <!-- SIDEBAR -->
-        <aside id="sidebar" class="bg-slate-900 text-slate-300 w-64 flex-shrink-0 flex flex-col transition-all duration-300 z-30 fixed inset-y-0 left-0 md:relative md:translate-x-0 -translate-x-full">
-            <!-- Sidebar Header -->
-            <div class="h-16 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-                        <i class="fa-solid fa-hospital-user text-xl"></i>
+        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-5 border-b border-slate-100 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-md shadow-teal-600/20">
+                        <i class="fa-solid fa-clinic-medical"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-white text-base tracking-wide leading-tight">E-PORTAL</h1>
-                        <p class="text-xs text-brand-400 font-medium">Puskesmas Sehat Utama</p>
+                        <h1 class="font-extrabold text-slate-800 text-sm leading-tight">E-Portal Sentolo II</h1>
+                        <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Puskesmas Digital</span>
                     </div>
                 </div>
-                <button id="close-sidebar-btn" class="md:hidden text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
 
-            <!-- Profile Overview Widget in Sidebar -->
-            <div class="p-4 border-b border-slate-800/80 bg-slate-900/50">
-                <div class="flex items-center space-x-3">
-                    <img id="sidebar-user-avatar" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150" alt="Avatar" class="w-11 h-11 rounded-full border-2 border-brand-500 object-cover shadow-sm">
-                    <div class="overflow-hidden">
-                        <h4 id="sidebar-user-name" class="text-sm font-semibold text-white truncate">dr. Budi Santoso</h4>
-                        <span id="sidebar-user-role-badge" class="inline-block px-2 py-0.5 text-[10px] font-medium bg-brand-500/20 text-brand-300 rounded-full border border-brand-500/30">
-                            Staf / Dokter
-                        </span>
+                <!-- Navigation Links -->
+                <nav class="p-3 space-y-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all sidebar-item-active">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>Dashboard & Analisa</span>
+                    </button>
+
+                    <button onclick="switchTab('absensi')" id="nav-absensi" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-user-check w-5 text-center"></i>
+                        <span>Portal Absensi Staf</span>
+                    </button>
+
+                    <button onclick="switchTab('cuti')" id="nav-cuti" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-calendar-minus w-5 text-center"></i>
+                        <span>Cuti & Pelimpahan</span>
+                    </button>
+
+                    <button onclick="switchTab('aduan')" id="nav-aduan" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-comment-dots w-5 text-center"></i>
+                        <span>Saran & Aduan</span>
+                    </button>
+
+                    <button onclick="switchTab('links')" id="nav-links" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                        <i class="fa-solid fa-cubes w-5 text-center"></i>
+                        <span>Shortcut Aplikasi</span>
+                    </button>
+
+                    <!-- TAB KHUSUS ADMIN & KAPUS (Daftar Pegawai & Hak Akses) -->
+                    <div class="pt-3 mt-3 border-t border-slate-100">
+                        <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Manajemen Pimpinan</span>
+                        <button onclick="switchTab('pegawai')" id="nav-pegawai" class="w-full flex items-center gap-3 px-3.5 py-2.5 mt-1 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all">
+                            <i class="fa-solid fa-users-gear w-5 text-center text-teal-600"></i>
+                            <span>Daftar Pegawai & Akses</span>
+                        </button>
                     </div>
-                </div>
+                </nav>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
-                <div class="px-3 py-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">Menu Utama</div>
-                
-                <a href="#" onclick="switchTab('dashboard')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="dashboard">
-                    <i class="fa-solid fa-chart-pie w-5 text-center text-brand-400"></i>
-                    <span>Dashboard & Analisa</span>
-                </a>
-
-                <a href="#" onclick="switchTab('absensi')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="absensi">
-                    <i class="fa-solid fa-clock-rotate-left w-5 text-center text-emerald-400"></i>
-                    <span>Portal Absensi</span>
-                </a>
-
-                <a href="#" onclick="switchTab('cuti')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="cuti">
-                    <i class="fa-solid fa-file-signature w-5 text-center text-amber-400"></i>
-                    <span>Cuti & Pelimpahan</span>
-                    <span id="badge-cuti-pending" class="ml-auto bg-amber-500/20 text-amber-300 text-xs font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 hidden">2</span>
-                </a>
-
-                <a href="#" onclick="switchTab('aduan')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="aduan">
-                    <i class="fa-solid fa-comments w-5 text-center text-sky-400"></i>
-                    <span>Saran & Aduan</span>
-                </a>
-
-                <a href="#" onclick="switchTab('applinks')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="applinks">
-                    <i class="fa-solid fa-cubes-stacked w-5 text-center text-indigo-400"></i>
-                    <span>Aplikasi Kesehatan</span>
-                </a>
-
-                <!-- Admin & Kapus Exclusive Menu -->
-                <div class="admin-only mt-6 hidden">
-                    <div class="px-3 py-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">Manajemen Pimpinan</div>
-                    <a href="#" onclick="switchTab('rekap-absen')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="rekap-absen">
-                        <i class="fa-solid fa-list-check w-5 text-center text-rose-400"></i>
-                        <span>Rekap Absensi Staf</span>
-                    </a>
-                    <a href="#" onclick="switchTab('users')" class="nav-link flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-300 hover:bg-slate-800 hover:text-white" data-tab="users">
-                        <i class="fa-solid fa-users-gear w-5 text-center text-purple-400"></i>
-                        <span>Manajemen Hak Akses</span>
-                    </a>
+            <!-- User Info Footer -->
+            <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200">
+                    <div class="flex items-center gap-2.5 overflow-hidden">
+                        <div id="userAvatar" class="w-8 h-8 bg-teal-100 text-teal-700 font-bold rounded-lg flex items-center justify-center text-xs shrink-0">
+                            US
+                        </div>
+                        <div class="truncate">
+                            <p id="userNameDisplay" class="text-xs font-bold text-slate-700 truncate">Nama User</p>
+                            <p id="userRoleBadge" class="text-[10px] font-medium text-slate-500 capitalize">Role</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-all" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
                 </div>
-            </nav>
-
-            <!-- Logout Button in Sidebar Footer -->
-            <div class="p-3 border-t border-slate-800 bg-slate-950/60 space-y-2">
-                <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 bg-rose-900/40 hover:bg-rose-900/80 text-rose-200 text-xs font-semibold py-2.5 px-3 rounded-lg border border-rose-800/50 transition">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Keluar / Logout</span>
-                </button>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
-        <div class="flex-1 flex flex-col h-full overflow-hidden">
-
-            <!-- Top Navigation Header -->
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 shadow-sm z-20">
-                <div class="flex items-center space-x-3">
-                    <button id="open-sidebar-btn" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-                    <!-- Current Section Title -->
-                    <h2 id="page-title" class="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
-                        Dashboard Utama
-                    </h2>
+        <!-- CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+            <!-- TOP BAR HEADER -->
+            <header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard & Analisa</h2>
+                    <p id="pageSubtitle" class="text-xs text-slate-500">Ringkasan statistik & indikator kinerja Puskesmas Hari Ini</p>
                 </div>
 
-                <!-- Right Header Tools -->
-                <div class="flex items-center space-x-3">
-                    
-                    <!-- Notification Bell -->
-                    <button onclick="toggleNotifications()" class="relative p-2 text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition">
-                        <i class="fa-regular fa-bell text-lg"></i>
-                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                <div class="flex items-center gap-3">
+                    <!-- DB Sync Status Indicator -->
+                    <div id="dbSyncBadge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full text-xs text-emerald-700 font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="dbSyncText">Google Drive Synced</span>
+                    </div>
+
+                    <button onclick="openDriveConfigModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-database text-teal-600"></i>
+                        <span>Setting Drive DB</span>
                     </button>
-
-                    <!-- Realtime Clock Widget -->
-                    <div class="hidden lg:flex flex-col items-end pl-3 border-l border-slate-200 text-right">
-                        <span id="live-time" class="text-sm font-bold text-slate-800 leading-none">12:00:00 WIB</span>
-                        <span id="live-date" class="text-[11px] text-slate-500 font-medium mt-1">Selasa, 22 Sep 2026</span>
-                    </div>
-
-                    <!-- User Pill Badge Header -->
-                    <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-full border border-slate-200 pl-3">
-                        <span id="header-user-display" class="text-xs font-bold text-slate-700">dr. Budi Santoso</span>
-                        <button onclick="handleLogout()" title="Logout" class="w-7 h-7 bg-white hover:bg-rose-50 hover:text-rose-600 rounded-full flex items-center justify-center text-slate-500 shadow-sm transition">
-                            <i class="fa-solid fa-power-off text-xs"></i>
-                        </button>
-                    </div>
-
                 </div>
             </header>
 
-            <!-- Main Content Scrollable Window -->
-            <main id="main-content" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 bg-slate-50">
+            <div class="p-8 space-y-6 flex-1">
 
-                <!-- 1. DASHBOARD TAB -->
-                <div id="tab-dashboard" class="tab-content space-y-6">
-                    
-                    <!-- AI Insight / Highlight Card -->
-                    <div class="bg-gradient-to-r from-brand-700 via-teal-700 to-medical-darkBlue rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div class="space-y-1">
-                                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-teal-200 border border-white/20">
-                                    <i class="fa-solid fa-sparkles text-amber-300"></i> Analisis Otomatis System
-                                </div>
-                                <h3 class="text-xl md:text-2xl font-bold">Ringkasan Operasional Puskesmas</h3>
-                                <p class="text-teal-100 text-sm max-w-2xl">
-                                    Tingkat kehadiran pegawai hari ini mencapai <span class="font-bold text-white underline">94.8%</span>. Terdapat <span class="text-amber-300 font-semibold">2 pengajuan cuti</span> yang butuh verifikasi pimpinan.
-                                </p>
-                            </div>
-                            <button onclick="switchTab('absensi')" class="whitespace-nowrap px-4 py-2.5 bg-white text-brand-800 font-semibold rounded-xl text-sm shadow-md hover:bg-slate-100 transition flex items-center gap-2">
-                                <i class="fa-solid fa-fingerprint"></i> Presensi Sekarang
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Metric Cards Section -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                            <div>
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Pegawai</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">42 <span class="text-xs text-slate-400 font-normal">Orang</span></h3>
-                                <span class="text-xs text-emerald-600 font-medium inline-flex items-center gap-1 mt-2">
-                                    <i class="fa-solid fa-circle-check"></i> 100% Terdaftar
-                                </span>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                <!-- 1. TAB DASHBOARD -->
+                <section id="tab-dashboard" class="space-y-6">
+                    <!-- Metric Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                        <div class="glass-card p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-users"></i>
                             </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">Total Pegawai Excel</p>
+                                <p class="text-2xl font-extrabold text-slate-800" id="statTotalPegawai">41</p>
+                                <p class="text-[10px] text-teal-600 font-medium mt-0.5"><i class="fa-solid fa-check"></i> UPT Sentolo II</p>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                            <div>
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kehadiran Hari Ini</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">38 <span class="text-xs text-slate-400 font-normal">/ 42 Staf</span></h3>
-                                <span class="text-xs text-emerald-600 font-medium inline-flex items-center gap-1 mt-2">
-                                    <i class="fa-solid fa-arrow-up"></i> +2.4% vs Kemarin
-                                </span>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                        <div class="glass-card p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-user-check"></i>
                             </div>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Permohonan Cuti</p>
-                                <h3 class="text-2xl font-bold text-amber-600 mt-1">2 <span class="text-xs text-slate-400 font-normal">Pending</span></h3>
-                                <span class="text-xs text-amber-600 font-medium inline-flex items-center gap-1 mt-2">
-                                    <i class="fa-solid fa-clock"></i> Butuh Persetujuan
-                                </span>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
-                                <i class="fa-solid fa-calendar-minus"></i>
+                                <p class="text-xs font-semibold text-slate-400">Hadir Hari Ini</p>
+                                <p class="text-2xl font-extrabold text-slate-800" id="statHadir">38</p>
+                                <p class="text-[10px] text-emerald-600 font-medium mt-0.5"><i class="fa-solid fa-arrow-up"></i> 92.6% Kehadiran</p>
                             </div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                            <div>
-                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Aduan Internal</p>
-                                <h3 class="text-2xl font-bold text-sky-600 mt-1">1 <span class="text-xs text-slate-400 font-normal">Baru</span></h3>
-                                <span class="text-xs text-sky-600 font-medium inline-flex items-center gap-1 mt-2">
-                                    <i class="fa-solid fa-envelope-open-text"></i> Tindak lanjut
-                                </span>
+                        <div class="glass-card p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-plane-departure"></i>
                             </div>
-                            <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl">
-                                <i class="fa-solid fa-comment-dots"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">Sedang Cuti / Ijin</p>
+                                <p class="text-2xl font-extrabold text-slate-800" id="statCuti">3</p>
+                                <p class="text-[10px] text-amber-600 font-medium mt-0.5"><i class="fa-solid fa-clock"></i> Pelimpahan Aktif</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">Aduan Masuk</p>
+                                <p class="text-2xl font-extrabold text-slate-800" id="statAduan">5</p>
+                                <p class="text-[10px] text-indigo-600 font-medium mt-0.5"><i class="fa-solid fa-spinner"></i> Dalam Tindak Lanjut</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Interactive Charts Section -->
+                    <!-- Charts Section -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Attendance Trend Chart -->
-                        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h4 class="font-bold text-slate-800">Tren Kehadiran Pegawai</h4>
-                                    <p class="text-xs text-slate-500">Persentase kehadiran per bulan tahun ini</p>
-                                </div>
-                                <select class="text-xs border border-slate-200 rounded-lg px-2.5 py-1 text-slate-600 bg-slate-50">
-                                    <option>Tahun 2026</option>
-                                    <option>Tahun 2025</option>
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200 lg:col-span-2">
+                            <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center justify-between">
+                                <span><i class="fa-solid fa-chart-line text-teal-600 mr-2"></i> Grafik Kehadiran Pegawai (Bulan Ini)</span>
+                                <span class="text-xs font-normal text-slate-400">Real-time Data</span>
+                            </h3>
+                            <div class="h-64">
+                                <canvas id="chartKehadiran"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                            <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-emerald-600"></i> Distribusi Jenis Cuti
+                            </h3>
+                            <div class="h-64 flex items-center justify-center">
+                                <canvas id="chartCuti"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 2. TAB DAFTAR PEGAWAI & SETTING HAK AKSES -->
+                <section id="tab-pegawai" class="space-y-6 hidden">
+                    <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                        <!-- Header & Control Bar -->
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-800">Daftar Pegawai UPT Puskesmas Sentolo II</h3>
+                                <p class="text-xs text-slate-500">Master Data Pegawai dari Excel Japel September 2026 & Pengaturan Hak Akses User System</p>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="text" id="searchPegawai" oninput="filterPegawaiTable()" placeholder="Cari nama / jabatan..." class="px-3.5 py-2 border border-slate-200 rounded-xl text-xs w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                <select id="filterRole" onchange="filterPegawaiTable()" class="px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
+                                    <option value="ALL">Semua Role</option>
+                                    <option value="Kepala Puskesmas">Kepala Puskesmas</option>
+                                    <option value="Admin">Admin / Ka TU</option>
+                                    <option value="Dokter">Dokter</option>
+                                    <option value="Perawat">Perawat</option>
+                                    <option value="Bidan">Bidan</option>
+                                    <option value="Apoteker">Apoteker</option>
+                                    <option value="Staf">Staf/Lainnya</option>
                                 </select>
                             </div>
-                            <div class="h-64 relative">
-                                <canvas id="attendanceChart"></canvas>
-                            </div>
                         </div>
 
-                        <!-- Leave Category Distribution Chart -->
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h4 class="font-bold text-slate-800">Distribusi Jenis Cuti</h4>
-                                    <p class="text-xs text-slate-500">Statistik pengajuan cuti staf</p>
-                                </div>
-                            </div>
-                            <div class="h-64 relative flex items-center justify-center">
-                                <canvas id="leaveDistributionChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Shortcuts / External Portal Links -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-rocket text-brand-600"></i> Akses Cepat Aplikasi Utama
-                            </h4>
-                            <button onclick="switchTab('applinks')" class="text-xs font-semibold text-brand-600 hover:text-brand-800">Lihat Semua Link &rarr;</button>
-                        </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" id="quick-links-dashboard">
-                            <!-- Injected by JS -->
+                        <!-- Table -->
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="p-3 border-b">No</th>
+                                        <th class="p-3 border-b">Nama Pegawai (Excel)</th>
+                                        <th class="p-3 border-b">Jabatan Official</th>
+                                        <th class="p-3 border-b">Username Login</th>
+                                        <th class="p-3 border-b">Role Hak Akses</th>
+                                        <th class="p-3 border-b text-center">Status</th>
+                                        <th class="p-3 border-b text-center">Aksi Setting</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pegawaiTableBody" class="text-xs divide-y divide-slate-100 text-slate-700">
+                                    <!-- Rendered dynamically via JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </section>
 
-                </div>
 
-                <!-- 2. PORTAL ABSENSI TAB -->
-                <div id="tab-absensi" class="tab-content hidden space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <!-- Check-In / Check-Out Widget -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center text-center">
-                            <div class="w-16 h-16 rounded-full bg-brand-50 border-4 border-brand-100 flex items-center justify-center text-brand-600 text-2xl mb-3 pulse-effect">
-                                <i class="fa-solid fa-street-view"></i>
-                            </div>
-                            <h3 class="font-bold text-slate-800 text-lg">Presensi Mandiri</h3>
-                            <p class="text-xs text-slate-500 mb-4">Pastikan Anda berada di area lokasi Puskesmas</p>
-
-                            <!-- Clock Display -->
-                            <div class="w-full bg-slate-900 text-white p-4 rounded-xl mb-4 font-mono">
-                                <div id="absen-clock" class="text-3xl font-bold tracking-wider text-teal-400">00:00:00</div>
-                                <div id="absen-date" class="text-xs text-slate-400 mt-1">Selasa, 22 September 2026</div>
-                            </div>
-
-                            <!-- Mock GPS Coordinates & Camera Simulation -->
-                            <div class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 text-left space-y-2 text-xs">
-                                <div class="flex justify-between items-center text-slate-600">
-                                    <span><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Lokasi GPS:</span>
-                                    <span class="font-semibold text-slate-800" id="gps-status">Puskesmas Utama (-7.795, 110.369)</span>
+                <!-- 3. TAB PORTAL ABSENSI -->
+                <section id="tab-absensi" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Form Absensi Card -->
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-camera text-teal-600"></i> Presensi Selfie & GPS
+                            </h3>
+                            <form onsubmit="submitAbsensi(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Status Kehadiran</label>
+                                    <select id="absensiStatus" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500">
+                                        <option value="Hadir Masuk">Hadir Masuk (Pagi)</option>
+                                        <option value="Hadir Pulang">Hadir Pulang (Sore)</option>
+                                        <option value="Dinas Luar">Dinas Luar / Fieldwork</option>
+                                    </select>
                                 </div>
-                                <div class="flex justify-between items-center text-slate-600">
-                                    <span><i class="fa-solid fa-camera text-sky-500 mr-1"></i> Verifikasi Wajah:</span>
-                                    <span class="font-semibold text-emerald-600"><i class="fa-solid fa-circle-check"></i> Siap / Aktif</span>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Keterangan / Catatan</label>
+                                    <textarea id="absensiKet" rows="2" placeholder="Catatan kegiatan..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500"></textarea>
                                 </div>
-                            </div>
-
-                            <!-- Attendance Buttons -->
-                            <div class="grid grid-cols-2 gap-3 w-full">
-                                <button onclick="handleAbsen('Masuk')" class="py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-right-to-bracket"></i> Check-In Masuk
+                                <div class="p-3 bg-slate-100 rounded-xl text-[11px] text-slate-500 space-y-1">
+                                    <p class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-rose-500"></i> <span>Lokasi: -7.868, 110.151 (Puskesmas Sentolo II)</span></p>
+                                    <p class="flex items-center gap-2"><i class="fa-solid fa-clock text-teal-600"></i> <span id="clockDisplay">--:--:-- WIB</span></p>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs shadow-md shadow-teal-600/20 transition-all">
+                                    Kirim Presensi Sekarang
                                 </button>
-                                <button onclick="handleAbsen('Pulang')" class="py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-right-from-bracket"></i> Check-Out Pulang
-                                </button>
-                            </div>
+                            </form>
                         </div>
 
-                        <!-- Personal Attendance History Table -->
-                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-base">Riwayat Absensi Saya</h3>
-                                    <p class="text-xs text-slate-500">Catatan waktu kehadiran Anda bulan ini</p>
-                                </div>
-                                <span class="bg-brand-50 text-brand-700 border border-brand-200 text-xs font-semibold px-3 py-1 rounded-full">
-                                    Status: Tepat Waktu (98%)
-                                </span>
-                            </div>
-
-                            <!-- Table -->
-                            <div class="overflow-x-auto custom-scrollbar flex-1">
-                                <table class="w-full text-left text-xs text-slate-600">
-                                    <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                        <!-- Riwayat Absensi Table -->
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200 md:col-span-2">
+                            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">
+                                <span><i class="fa-solid fa-list-check text-emerald-600 mr-2"></i> Log Presensi Pegawai</span>
+                                <button onclick="exportAbsensiCSV()" class="text-xs text-teal-600 hover:underline font-semibold"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                            </h3>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-80 custom-scrollbar">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
                                         <tr>
-                                            <th class="p-3">Tanggal</th>
-                                            <th class="p-3">Jam Masuk</th>
-                                            <th class="p-3">Jam Pulang</th>
-                                            <th class="p-3">Status</th>
-                                            <th class="p-3 text-right">Aksi</th>
+                                            <th class="p-2.5 border-b">Waktu</th>
+                                            <th class="p-2.5 border-b">Nama Staf</th>
+                                            <th class="p-2.5 border-b">Jabatan</th>
+                                            <th class="p-2.5 border-b">Tipe</th>
+                                            <th class="p-2.5 border-b">Status GPS</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="user-attendance-table-body" class="divide-y divide-slate-100">
-                                        <!-- Injected by JS -->
+                                    <tbody id="absensiLogsBody" class="divide-y divide-slate-100">
+                                        <!-- Rendered dynamically -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
                     </div>
-                </div>
+                </section>
 
-                <!-- 3. CUTI & PELIMPAHAN TUGAS TAB -->
-                <div id="tab-cuti" class="tab-content hidden space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <!-- Form Submission Card -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                            <div class="border-b border-slate-100 pb-3">
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-file-pen text-brand-600"></i> Pengajuan Cuti & Tugas
-                                </h3>
-                                <p class="text-xs text-slate-500">Isi formulir pengajuan beserta penunjukan pelimpahan tugas</p>
-                            </div>
 
-                            <form id="form-cuti" onsubmit="submitCuti(event)" class="space-y-3">
+                <!-- 4. TAB CUTI & PELIMPAHAN -->
+                <section id="tab-cuti" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                            <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-file-pen text-teal-600 mr-2"></i> Form Permohonan Cuti</h3>
+                            <form onsubmit="submitCuti(event)" class="space-y-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Pengajuan Cuti</label>
-                                    <select id="jenis-cuti" required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-brand-500 outline-none">
-                                        <option value="">-- Pilih Jenis Cuti --</option>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Cuti</label>
+                                    <select id="cutiJenis" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
                                         <option value="Cuti Tahunan">Cuti Tahunan</option>
                                         <option value="Cuti Sakit">Cuti Sakit</option>
                                         <option value="Cuti Melahirkan">Cuti Melahirkan</option>
                                         <option value="Cuti Alasan Penting">Cuti Alasan Penting</option>
                                     </select>
                                 </div>
-
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mulai Tanggal</label>
-                                        <input type="date" id="mulai-cuti" required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-brand-500 outline-none">
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mulai</label>
+                                        <input type="date" id="cutiTglMulai" required class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Selesai Tanggal</label>
-                                        <input type="date" id="selesai-cuti" required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-brand-500 outline-none">
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Selesai</label>
+                                        <input type="date" id="cutiTglSelesai" required class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs">
                                     </div>
                                 </div>
-
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Alasan Cuti</label>
-                                    <textarea id="alasan-cuti" rows="2" placeholder="Jelaskan alasan pengajuan..." required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pelimpahan Tugas Kepada (Pegawai Excel)</label>
+                                    <select id="cutiPelimpahanTo" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
+                                        <!-- Loaded dynamically from pegawai list -->
+                                    </select>
                                 </div>
-
-                                <div class="p-3 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2">
-                                    <span class="text-xs font-bold text-amber-800 flex items-center gap-1">
-                                        <i class="fa-solid fa-user-gear"></i> Pelimpahan Tugas Sementara
-                                    </span>
-                                    <div>
-                                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Pegawai Pengganti (Penerima Tugas)</label>
-                                        <select id="penerima-tugas" required class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-white focus:ring-2 focus:ring-brand-500 outline-none">
-                                            <option value="">-- Pilih Pegawai --</option>
-                                            <option value="dr. Siti Rahma (Dokter Umum)">dr. Siti Rahma (Dokter Umum)</option>
-                                            <option value="Ns. Andi Wijaya, S.Kep (Perawat)">Ns. Andi Wijaya, S.Kep (Perawat)</option>
-                                            <option value="Apt. Rina Lestari, S.Farm (Apoteker)">Apt. Rina Lestari, S.Farm (Apoteker)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Daftar Tugas Dilimpahkan</label>
-                                        <input type="text" id="rincian-tugas" placeholder="Misal: Pelayanan Poli Umum & Rekap RM" required class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-white focus:ring-2 focus:ring-brand-500 outline-none">
-                                    </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Rincian Tugas Dikelimpahkan</label>
+                                    <textarea id="cutiRincianTugas" rows="2" placeholder="Pelayanan poli umum, laporan bulanan..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
                                 </div>
-
-                                <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs transition shadow">
-                                    Kirim Pengajuan Cuti & Tugas
+                                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs shadow-md">
+                                    Ajukan Permohonan Cuti
                                 </button>
                             </form>
                         </div>
 
-                        <!-- Cuti Management & Approval Table -->
-                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col space-y-4">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-base">Daftar Pengajuan Cuti Staf</h3>
-                                    <p class="text-xs text-slate-500">Kelola dan pantau persetujuan izin cuti pegawai</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="text" id="search-cuti" oninput="renderCutiTable()" placeholder="Cari nama/jenis..." class="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 focus:outline-none">
-                                </div>
-                            </div>
-
-                            <div class="overflow-x-auto custom-scrollbar flex-1">
-                                <table class="w-full text-left text-xs text-slate-600">
-                                    <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200 md:col-span-2">
+                            <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-list text-teal-600 mr-2"></i> Daftar Pengajuan Cuti & Status Approval</h3>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase">
                                         <tr>
-                                            <th class="p-3">Pemohon</th>
-                                            <th class="p-3">Jenis & Tanggal</th>
-                                            <th class="p-3">Penerima Tugas</th>
-                                            <th class="p-3">Status</th>
-                                            <th class="p-3 text-right">Aksi Approval</th>
+                                            <th class="p-3 border-b">Pemohon</th>
+                                            <th class="p-3 border-b">Jenis</th>
+                                            <th class="p-3 border-b">Tanggal</th>
+                                            <th class="p-3 border-b">Penerima Tugas</th>
+                                            <th class="p-3 border-b text-center">Status</th>
+                                            <th class="p-3 border-b text-center">Aksi (Kapus)</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="cuti-table-body" class="divide-y divide-slate-100">
-                                        <!-- Injected by JS -->
+                                    <tbody id="cutiTableBody" class="divide-y divide-slate-100">
+                                        <!-- Rendered dynamically -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
                     </div>
-                </div>
+                </section>
 
-                <!-- 4. SARAN & ADUAN INTERNAL TAB -->
-                <div id="tab-aduan" class="tab-content hidden space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <!-- Form Feedback/Complaint -->
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+
+                <!-- 5. TAB SHORTCUT APLIKASI -->
+                <section id="tab-links" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                        <a href="https://epuskesmas.id" target="_blank" class="glass-card p-5 rounded-2xl border border-slate-200 hover:shadow-xl transition-all group flex flex-col justify-between">
                             <div>
-                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-                                    <i class="fa-solid fa-comment-medical text-sky-600"></i> Buat Aduan / Saran
-                                </h3>
-                                <p class="text-xs text-slate-500">Wadah aspirasi internal demi kemajuan layanan Puskesmas</p>
+                                <div class="w-12 h-12 bg-teal-100 text-teal-700 rounded-xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition-all">
+                                    <i class="fa-solid fa-laptop-medical"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-sm">ePuskesmas Indonesia</h4>
+                                <p class="text-xs text-slate-500 mt-1">Sistem Rekam Medis Elektronik (RME) Pelayanan Pasien.</p>
                             </div>
+                            <span class="mt-4 text-xs font-semibold text-teal-600 flex items-center gap-1">Buka Aplikasi <i class="fa-solid fa-external-link text-[10px]"></i></span>
+                        </a>
 
-                            <form id="form-aduan" onsubmit="submitAduan(event)" class="space-y-3">
+                        <a href="https://pcarejkn.bpjs-kesehatan.go.id" target="_blank" class="glass-card p-5 rounded-2xl border border-slate-200 hover:shadow-xl transition-all group flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition-all">
+                                    <i class="fa-solid fa-id-card-clip"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-sm">P-Care BPJS Kesehatan</h4>
+                                <p class="text-xs text-slate-500 mt-1">Entri Klaim & Rujukan Fasilitas Kesehatan Tingkat Pertama.</p>
+                            </div>
+                            <span class="mt-4 text-xs font-semibold text-emerald-600 flex items-center gap-1">Buka Aplikasi <i class="fa-solid fa-external-link text-[10px]"></i></span>
+                        </a>
+
+                        <a href="https://sehatindonesiaku.kemkes.go.id" target="_blank" class="glass-card p-5 rounded-2xl border border-slate-200 hover:shadow-xl transition-all group flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition-all">
+                                    <i class="fa-solid fa-syringe"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-sm">ASIK Kemenkes</h4>
+                                <p class="text-xs text-slate-500 mt-1">Aplikasi Sehat IndonesiaKu untuk Imunisasi & PTM.</p>
+                            </div>
+                            <span class="mt-4 text-xs font-semibold text-indigo-600 flex items-center gap-1">Buka Aplikasi <i class="fa-solid fa-external-link text-[10px]"></i></span>
+                        </a>
+
+                        <a href="https://sisrute.kemkes.go.id" target="_blank" class="glass-card p-5 rounded-2xl border border-slate-200 hover:shadow-xl transition-all group flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-2xl font-bold mb-3 group-hover:scale-110 transition-all">
+                                    <i class="fa-solid fa-truck-medical"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-sm">SISRUTE Kemenkes</h4>
+                                <p class="text-xs text-slate-500 mt-1">Sistem Informasi Rujukan Terintegrasi Antar Faskes.</p>
+                            </div>
+                            <span class="mt-4 text-xs font-semibold text-amber-600 flex items-center gap-1">Buka Aplikasi <i class="fa-solid fa-external-link text-[10px]"></i></span>
+                        </a>
+                    </div>
+                </section>
+
+
+                <!-- 6. TAB ADUAN INTERNAL -->
+                <section id="tab-aduan" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                            <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-paper-plane text-teal-600 mr-2"></i> Form Saran & Aduan Internal</h3>
+                            <form onsubmit="submitAduan(event)" class="space-y-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori</label>
-                                    <select id="kategori-aduan" required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-sky-500 outline-none">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
+                                    <select id="aduanKategori" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
                                         <option value="Fasilitas & Sarpras">Fasilitas & Sarpras</option>
-                                        <option value="Pelayanan & Operasional">Pelayanan & Operasional</option>
-                                        <option value="Sistem Informasi & IT">Sistem Informasi & IT</option>
-                                        <option value="Lingkungan Kerja">Lingkungan Kerja / Internal</option>
+                                        <option value="Pelayanan / Alur Work">Pelayanan / Alur Kerja</option>
+                                        <option value="K3 & Lingkungan">K3 & Lingkungan Kerja</option>
+                                        <option value="Lainnya">Lainnya</option>
                                     </select>
                                 </div>
-
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Sifat Identitas Pelapor</label>
-                                    <div class="flex gap-4 items-center text-xs">
-                                        <label class="flex items-center gap-1.5 cursor-pointer">
-                                            <input type="radio" name="anonim" value="false" checked class="text-brand-600"> Terbuka (Gunakan Nama Saya)
-                                        </label>
-                                        <label class="flex items-center gap-1.5 cursor-pointer">
-                                            <input type="radio" name="anonim" value="true" class="text-brand-600"> Anonim (Rahasia)
-                                        </label>
-                                    </div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Isi Saran / Aduan</label>
+                                    <textarea id="aduanIsi" rows="4" placeholder="Tuliskan masukan atau kendala secara rinci..." required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
                                 </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Subjek / Judul</label>
-                                    <input type="text" id="subjek-aduan" placeholder="Ringkasan singkat topik..." required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-sky-500 outline-none">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="aduanAnonim" class="rounded border-slate-300 text-teal-600">
+                                    <label for="aduanAnonim" class="text-xs text-slate-600 font-medium">Kirim secara Anonim (Tanpa Nama)</label>
                                 </div>
-
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Rincian Saran / Aduan</label>
-                                    <textarea id="isi-aduan" rows="4" placeholder="Sampaikan detail permasalahan atau usulan solusinya..." required class="w-full text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
-                                </div>
-
-                                <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-xs transition shadow">
-                                    <i class="fa-solid fa-paper-plane mr-1"></i> Kirim Masukan
+                                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs shadow-md">
+                                    Kirim Aduan Internal
                                 </button>
                             </form>
                         </div>
 
-                        <!-- Feedback List Panel -->
-                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col space-y-4">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-base">Daftar Aspirasi Internal</h3>
-                                    <p class="text-xs text-slate-500">Umpan balik dari pegawai dan tindak lanjut pimpinan</p>
-                                </div>
+                        <div class="glass-card p-6 rounded-2xl border border-slate-200 md:col-span-2">
+                            <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-comments text-indigo-600 mr-2"></i> Daftar Masukan & Status Tindak Lanjut</h3>
+                            <div id="aduanListContainer" class="space-y-3">
+                                <!-- Rendered dynamically -->
                             </div>
-
-                            <div id="aduan-list" class="space-y-3 overflow-y-auto custom-scrollbar max-h-[500px] pr-1">
-                                <!-- Injected by JS -->
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- 5. APLIKASI KESEHATAN (SHORTCUT LINKS) TAB -->
-                <div id="tab-applinks" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                                    <i class="fa-solid fa-square-parking text-indigo-600"></i> Portal Integrasi Aplikasi Kesehatan
-                                </h3>
-                                <p class="text-xs text-slate-500">Pintas cepat ke aplikasi eksternal Kemenkes, BPJS, & Dinkes</p>
-                            </div>
-                            <!-- Search filter apps -->
-                            <div class="w-full sm:w-64">
-                                <input type="text" id="search-apps" oninput="renderAppLinks()" placeholder="🔍 Cari nama aplikasi..." class="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="app-links-grid">
-                            <!-- Injected by JS -->
                         </div>
                     </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDIT PEGAWAI / HAK AKSES -->
+    <div id="editPegawaiModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-100">
+            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-teal-600"></i> Setting Hak Akses Pegawai
+            </h3>
+            <form onsubmit="savePegawaiSetting(event)" class="space-y-3">
+                <input type="hidden" id="editPegawaiId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pegawai</label>
+                    <input type="text" id="editNama" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700">
                 </div>
-
-                <!-- 6. REKAP ABSENSI STAF (ADMIN & KAPUS EXCLUSIVE) -->
-                <div id="tab-rekap-absen" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-lg">Rekap Kehadiran Seluruh Staf</h3>
-                                <p class="text-xs text-slate-500">Monitor dan ekspor data kedisiplinan pegawai Puskesmas</p>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button onclick="exportToCSV()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold shadow transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-file-excel text-emerald-400"></i> Export Excel/CSV
-                                </button>
-                                <button onclick="window.print()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-print"></i> Cetak Laporan
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Table Controls (Filter & Sorting) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                            <div>
-                                <label class="block font-semibold text-slate-600 mb-1">Filter Poli / Unit</label>
-                                <select id="filter-unit" onchange="renderRekapTable()" class="w-full border border-slate-200 rounded-lg p-2 bg-white">
-                                    <option value="ALL">Semua Poli / Unit</option>
-                                    <option value="Poli Umum">Poli Umum</option>
-                                    <option value="Poli Gigi">Poli Gigi</option>
-                                    <option value="Poli KIA / KB">Poli KIA / KB</option>
-                                    <option value="Farmasi">Apotek / Farmasi</option>
-                                    <option value="Tata Usaha">Tata Usaha</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-semibold text-slate-600 mb-1">Urutkan Berdasarkan</label>
-                                <select id="sort-rekap" onchange="renderRekapTable()" class="w-full border border-slate-200 rounded-lg p-2 bg-white">
-                                    <option value="nama">Nama Pegawai (A-Z)</option>
-                                    <option value="kehadiran">Tingkat Kehadiran Highest</option>
-                                    <option value="terlambat">Jumlah Terlambat Highest</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-semibold text-slate-600 mb-1">Pencarian Staf</label>
-                                <input type="text" id="search-rekap" oninput="renderRekapTable()" placeholder="Ketik Nama atau NIP..." class="w-full border border-slate-200 rounded-lg p-2 bg-white">
-                            </div>
-                        </div>
-
-                        <!-- Table Data -->
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs text-slate-600">
-                                <thead class="bg-slate-100 text-slate-800 uppercase font-semibold border-b border-slate-200">
-                                    <tr>
-                                        <th class="p-3">NIP & Nama Pegawai</th>
-                                        <th class="p-3">Unit / Jabatan</th>
-                                        <th class="p-3 text-center">Hadir</th>
-                                        <th class="p-3 text-center">Izin / Cuti</th>
-                                        <th class="p-3 text-center">Terlambat</th>
-                                        <th class="p-3 text-center">Persentase</th>
-                                        <th class="p-3 text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rekap-table-body" class="divide-y divide-slate-100">
-                                    <!-- Injected by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jabatan Official (Excel)</label>
+                    <input type="text" id="editJabatan" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-600">
                 </div>
-
-                <!-- 7. MANAJEMEN HAK AKSES USER (ADMIN EXCLUSIVE) -->
-                <div id="tab-users" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-lg">Kelola Hak Akses Pegawai</h3>
-                                <p class="text-xs text-slate-500">Atur kewenangan login pengguna sistem E-Portal</p>
-                            </div>
-                            <button onclick="showToast('Tambah User', 'Fitur Tambah Pegawai Baru siap digunakan.', 'info')" class="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs shadow transition">
-                                <i class="fa-solid fa-user-plus mr-1"></i> Tambah User Baru
-                            </button>
-                        </div>
-
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs text-slate-600">
-                                <thead class="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
-                                    <tr>
-                                        <th class="p-3">User</th>
-                                        <th class="p-3">Jabatan</th>
-                                        <th class="p-3">Role Login</th>
-                                        <th class="p-3">Status Akses</th>
-                                        <th class="p-3 text-right">Kelola Role</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body" class="divide-y divide-slate-100">
-                                    <!-- Injected by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Role / Hak Akses System</label>
+                    <select id="editRole" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500">
+                        <option value="Kepala Puskesmas">Kepala Puskesmas (Full Approval & Analisa)</option>
+                        <option value="Admin">Admin / Ka TU (Full System Control)</option>
+                        <option value="Dokter">Dokter (Portal Pegawai + Fitur Medis)</option>
+                        <option value="Perawat">Perawat (Portal Pegawai)</option>
+                        <option value="Bidan">Bidan (Portal Pegawai)</option>
+                        <option value="Apoteker">Apoteker (Portal Pegawai)</option>
+                        <option value="Staf">Staf Non-Medis / Administrasi</option>
+                    </select>
                 </div>
-
-            </main>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Reset Password User</label>
+                    <input type="text" id="editPassword" placeholder="Masukkan password baru" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeEditPegawaiModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs shadow-md">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
+    <!-- MODAL GOOGLE DRIVE DATABASE CONFIG -->
+    <div id="driveConfigModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-100">
+            <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <i class="fa-brands fa-google-drive text-teal-600 text-xl"></i> Integrasi Google Drive Database
+            </h3>
+            <p class="text-xs text-slate-500 mb-4">Hubungkan aplikasi E-Portal ini ke **Google Sheets / Apps Script** di Google Drive Anda untuk menyimpan seluruh data presensi, cuti, dan pegawai secara terpusat.</p>
+
+            <form onsubmit="saveDriveConfig(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Google Apps Script Web App URL</label>
+                    <input type="url" id="driveScriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-500">
+                    <p class="text-[10px] text-slate-400 mt-1">URL Web App hasil deployment Google Apps Script.</p>
+                </div>
+
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                    <p class="font-bold mb-1"><i class="fa-solid fa-lightbulb text-amber-600"></i> Mode Penyimpanan Saat Ini:</p>
+                    <p id="driveModeDesc" class="text-[11px]">Local Browser Storage (Auto-Sync) & siap dihubungkan ke Drive Apps Script API.</p>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeDriveConfigModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl text-xs">Tutup</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs shadow-md">Simpan Konfigurasi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- AUTH DATABASE DUMMY & ROLES ---
-        const userDatabase = {
-            'admin': { username: 'admin', password: 'admin123', name: 'Administrator IT', role: 'admin', roleTitle: 'Administrator System', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150' },
-            'kapus': { username: 'kapus', password: 'kapus123', name: 'H. Achmad, M.Kes', role: 'kapus', roleTitle: 'Kepala Puskesmas', avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150' },
-            'dokter': { username: 'dokter', password: 'dokter123', name: 'dr. Budi Santoso', role: 'pegawai', roleTitle: 'Dokter Fungsional', avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150' },
-            'perawat': { username: 'perawat', password: 'perawat123', name: 'Ns. Andi Wijaya, S.Kep', role: 'pegawai', roleTitle: 'Perawat / Loket', avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150' }
-        };
-
-        let currentUser = null;
-
-        // App external links library
-        const appLinks = [
-            { id: 1, name: 'ePuskesmas', desc: 'Sistem Informasi Rekam Medis Elektronik', category: 'SIMPUS', icon: 'fa-hospital', color: 'bg-emerald-500', url: 'https://epuskesmas.id' },
-            { id: 2, name: 'P-Care BPJS', desc: 'Pelayanan Primary Care Peserta BPJS', category: 'BPJS', icon: 'fa-notes-medical', color: 'bg-blue-600', url: 'https://pcarejkn.bpjs-kesehatan.go.id' },
-            { id: 3, name: 'ASIK Kemenkes', desc: 'Aplikasi Sehat IndonesiaKu Program Posyandu', category: 'Kemenkes', icon: 'fa-heart-pulse', color: 'bg-teal-500', url: 'https://asik.kemkes.go.id' },
-            { id: 4, name: 'SMILE Vaksin', desc: 'Sistem Pengelolaan Imunisasi & Logistik', category: 'Logistik', icon: 'fa-vial-virus', color: 'bg-indigo-500', url: 'https://smile-indonesia.org' },
-            { id: 5, name: 'MPDN Kemenkes', desc: 'Maternal Perinatal Death Notification', category: 'Kesehatan Ibu', icon: 'fa-baby', color: 'bg-rose-500', url: 'https://mpdn.kemkes.go.id' },
-            { id: 6, name: 'SILANTAS', desc: 'Sistem Pelaporan Kesehatan Olahraga & Lansia', category: 'Pelaporan', icon: 'fa-person-walking-with-cane', color: 'bg-amber-500', url: '#' },
-            { id: 7, name: 'SISRUTE', desc: 'Sistem Informasi Rujukan Terintegrasi', category: 'Rujukan', icon: 'fa-truck-medical', color: 'bg-sky-600', url: '#' },
-            { id: 8, name: 'SITB Paru', desc: 'Sistem Informasi Tuberkulosis Indonesia', category: 'Program P2P', icon: 'fa-lungs', color: 'bg-purple-600', url: '#' }
+        // MASTER DATA PEGAWAI DARI EXCEL JAPEL SEPTEMBER 2026 (UPT PUSKESMAS SENTOLO II)
+        const initialPegawaiData = [
+            { id: 1, nama: "drg. R. A. Hannie Permatasari", jabatan: "Ka Puskesmas", role: "Kepala Puskesmas", username: "hannie", pass: "hannie123", status: "Aktif" },
+            { id: 2, nama: "dr. AM Sajarwadi, M.Kes", jabatan: "Dokter umum", role: "Dokter", username: "sajarwadi", pass: "sajarwadi123", status: "Aktif" },
+            { id: 3, nama: "Endang Lestari P, SST", jabatan: "Bidan Madya", role: "Bidan", username: "endang", pass: "endang123", status: "Aktif" },
+            { id: 4, nama: "drg. Diyah Sugiyarti", jabatan: "Dokter gigi", role: "Dokter", username: "diyah", pass: "diyah123", status: "Aktif" },
+            { id: 5, nama: "Taufik Hurrohman, AMK", jabatan: "Perawat", role: "Perawat", username: "taufik", pass: "taufik123", status: "Aktif" },
+            { id: 6, nama: "Ngatini, AMK", jabatan: "Perawat", role: "Perawat", username: "ngatini", pass: "ngatini123", status: "Aktif" },
+            { id: 7, nama: "Nur Fatimah, AMK", jabatan: "Perawat", role: "Perawat", username: "nurfatimah", pass: "nurfatimah123", status: "Aktif" },
+            { id: 8, nama: "Sayekti Suciani, AMAK", jabatan: "Pranata lab", role: "Staf", username: "sayekti", pass: "sayekti123", status: "Aktif" },
+            { id: 9, nama: "Heni Trapsilowati, S.Tr.Keb", jabatan: "Bidan", role: "Bidan", username: "heni", pass: "heni123", status: "Aktif" },
+            { id: 10, nama: "Sri Juniati, Amd.Keb", jabatan: "Bidan", role: "Bidan", username: "srijuniati", pass: "srijuniati123", status: "Aktif" },
+            { id: 11, nama: "Indra Darma Setiawan, A.Md", jabatan: "Administrasi", role: "Staf", username: "indra", pass: "indra123", status: "Aktif" },
+            { id: 12, nama: "Bambang Wahyuli P, AMK", jabatan: "Perawat", role: "Perawat", username: "bambang", pass: "bambang123", status: "Aktif" },
+            { id: 13, nama: "Padniasih, AMKG", jabatan: "Administrasi", role: "Staf", username: "padniasih", pass: "padniasih123", status: "Aktif" },
+            { id: 14, nama: "Siti Aminah, S.Tr.Keb", jabatan: "Bidan", role: "Bidan", username: "sitiaminah", pass: "sitiaminah123", status: "Aktif" },
+            { id: 15, nama: "Elizabeth Rahayu P, S.Farm. Apt", jabatan: "Apoteker", role: "Apoteker", username: "elizabeth", pass: "elizabeth123", status: "Aktif" },
+            { id: 16, nama: "Kadri Sriyono, AMK", jabatan: "Perawat", role: "Perawat", username: "kadri", pass: "kadri123", status: "Aktif" },
+            { id: 17, nama: "Anggraeni Purbaningtyas, S.Farm, APT", jabatan: "Ka TU", role: "Admin", username: "anggraeni", pass: "anggraeni123", status: "Aktif" },
+            { id: 18, nama: "Sri Wahyuni, Amd.Keb", jabatan: "Bidan", role: "Bidan", username: "sriwahyuni", pass: "sriwahyuni123", status: "Aktif" },
+            { id: 19, nama: "Nurhayati Winarsih, Amd.Keb", jabatan: "Bidan", role: "Bidan", username: "nurhayati", pass: "nurhayati123", status: "Aktif" },
+            { id: 20, nama: "Yuliatun Aryadi, Amd.Far", jabatan: "Tenaga Teknis Kefarmasian", role: "Staf", username: "yuliatun", pass: "yuliatun123", status: "Aktif" },
+            { id: 21, nama: "Dwi Haryani, AMK", jabatan: "Perawat", role: "Perawat", username: "dwiharyani", pass: "dwiharyani123", status: "Aktif" },
+            { id: 22, nama: "dr. Fathimatuzzahro", jabatan: "Dokter umum", role: "Dokter", username: "fathimatu", pass: "fathimatu123", status: "Aktif" },
+            { id: 23, nama: "Raras Wibi R, S.Farm. Apt", jabatan: "Apoteker", role: "Apoteker", username: "raras", pass: "raras123", status: "Aktif" },
+            { id: 24, nama: "Ceria Hardianwarsari, S.KM", jabatan: "Survailans", role: "Staf", username: "ceria", pass: "ceria123", status: "Aktif" },
+            { id: 25, nama: "Suryanti, AMKL", jabatan: "Sanitarian", role: "Staf", username: "suryanti", pass: "suryanti123", status: "Aktif" },
+            { id: 26, nama: "Rizki Intan Maharyani, Amd.Gz", jabatan: "Nutrisionis", role: "Staf", username: "rizki", pass: "rizki123", status: "Aktif" },
+            { id: 27, nama: "Irma Apriyanti, Amd", jabatan: "Rekam Medis", role: "Staf", username: "irma", pass: "irma123", status: "Aktif" },
+            { id: 28, nama: "Bekti Nugroho, AMKL", jabatan: "Penyuluh kesmas", role: "Staf", username: "bekti", pass: "bekti123", status: "Aktif" },
+            { id: 29, nama: "Novi Susilowati, Amd.Akt", jabatan: "Akuntan", role: "Staf", username: "novisusi", pass: "novisusi123", status: "Aktif" },
+            { id: 30, nama: "Adeani K Permana, Amd.Keb", jabatan: "Bidan", role: "Bidan", username: "adeani", pass: "adeani123", status: "Aktif" },
+            { id: 31, nama: "Nasrullah Fatkhanudin", jabatan: "Kepegawaian", role: "Admin", username: "nasrullah", pass: "nasrullah123", status: "Aktif" },
+            { id: 32, nama: "Diah Nastiti, Amd.Ak", jabatan: "Pengelola Keuangan", role: "Staf", username: "diahnastiti", pass: "diahnastiti123", status: "Aktif" },
+            { id: 33, nama: "Novi Chyntia Prisma D, S.Gz", jabatan: "Nutrisions", role: "Staf", username: "novichyntia", pass: "novichyntia123", status: "Aktif" },
+            { id: 34, nama: "Fahreza Yoga Pratama, S.Tr.KL", jabatan: "Pengelola Jaminan Kesehatan", role: "Staf", username: "fahreza", pass: "fahreza123", status: "Aktif" },
+            { id: 35, nama: "Agung Hariyanto", jabatan: "Pranata Laboratorium", role: "Staf", username: "agung", pass: "agung123", status: "Aktif" },
+            { id: 36, nama: "Ihwan Nurul Hadi", jabatan: "Pengelola Teknologi Informasi", role: "Admin", username: "ihwan", pass: "ihwan123", status: "Aktif" },
+            { id: 37, nama: "dr. Tigris Thursina Putri", jabatan: "Dokter Umum", role: "Dokter", username: "tigris", pass: "tigris123", status: "Aktif" },
+            { id: 38, nama: "Annisa Kurnia Ningrum, A.Md.Kes", jabatan: "Perawat Gigi", role: "Perawat", username: "annisa", pass: "annisa123", status: "Aktif" },
+            { id: 39, nama: "Sadiyem", jabatan: "Pengelola Linen", role: "Staf", username: "sadiyem", pass: "sadiyem123", status: "Aktif" },
+            { id: 40, nama: "Anggi Mustika Maylani", jabatan: "Kasir", role: "Staf", username: "anggi", pass: "anggi123", status: "Aktif" },
+            { id: 41, nama: "Reda Trilaksana", jabatan: "Jaga Malam", role: "Staf", username: "reda", pass: "reda123", status: "Aktif" }
         ];
 
-        // Personal attendance log dummy
-        let personalAttendance = [
-            { date: '2026-09-22', checkIn: '07:24 WIB', checkOut: '--:--', status: 'Hadir Tepat Waktu', badge: 'bg-emerald-100 text-emerald-700' },
-            { date: '2026-09-21', checkIn: '07:28 WIB', checkOut: '15:32 WIB', status: 'Hadir Tepat Waktu', badge: 'bg-emerald-100 text-emerald-700' },
-            { date: '2026-09-18', checkIn: '07:52 WIB', checkOut: '15:30 WIB', status: 'Terlambat (12 mnt)', badge: 'bg-amber-100 text-amber-700' },
-            { date: '2026-09-17', checkIn: '07:15 WIB', checkOut: '15:35 WIB', status: 'Hadir Tepat Waktu', badge: 'bg-emerald-100 text-emerald-700' }
-        ];
+        // STATE MANAGEMENT
+        let currentPegawaiList = JSON.parse(localStorage.getItem('portal_pegawai_db')) || initialPegawaiData;
+        let currentUser = JSON.parse(localStorage.getItem('portal_logged_user')) || null;
+        let absensiLogs = JSON.parse(localStorage.getItem('portal_absensi_logs')) || [];
+        let cutiList = JSON.parse(localStorage.getItem('portal_cuti_list')) || [];
+        let aduanList = JSON.parse(localStorage.getItem('portal_aduan_list')) || [];
+        let driveScriptUrl = localStorage.getItem('portal_drive_url') || '';
 
-        // Leave Requests Data
-        let leaveRequests = [
-            { id: 101, name: 'dr. Budi Santoso', jenis: 'Cuti Tahunan', tgl: '28 Sep - 30 Sep 2026', pengganti: 'dr. Siti Rahma', status: 'Pending', tugas: 'Pelayanan Poliklinik Pagi' },
-            { id: 102, name: 'Ns. Andi Wijaya', jenis: 'Cuti Alasan Penting', tgl: '25 Sep 2026', pengganti: 'Ns. Ratna M.Si', status: 'Disetujui', tugas: 'Jaga IGD Shift Malam' },
-            { id: 103, name: 'Apt. Rina Lestari', jenis: 'Cuti Sakit', tgl: '15 Sep - 16 Sep 2026', pengganti: 'Apt. Farhan', status: 'Disetujui', tugas: 'Penyiapan Obat Racikan' }
-        ];
-
-        // Internal Complaints Data
-        let complaints = [
-            { id: 1, kategori: 'Fasilitas & Sarpras', subjek: 'AC Poli Gigi Kurang Dingin', isi: 'Mohon dicek filter AC Poli Gigi karena mulai terasa panas saat pelayanan jam 10 pagi.', sender: 'drg. Maya Indra', anonim: false, date: '21 Sep 2026', status: 'Diproses' },
-            { id: 2, kategori: 'Sistem Informasi & IT', subjek: 'Jaringan Internet Farmasi Lambat', isi: 'Koneksi ke server BPJS sering time-out saat cetak resep.', sender: 'Anonim Staf', anonim: true, date: '19 Sep 2026', status: 'Selesai' }
-        ];
-
-        // All Staff Attendance Recap Data (For Admin view)
-        let staffRecap = [
-            { nip: '198803122015031002', nama: 'dr. Budi Santoso', unit: 'Poli Umum', hadir: 21, izin: 0, lambat: 1, percent: 98 },
-            { nip: '199005142018012005', nama: 'dr. Siti Rahma', unit: 'Poli Umum', hadir: 22, izin: 0, lambat: 0, percent: 100 },
-            { nip: '198501222010011003', nama: 'Ns. Andi Wijaya, S.Kep', unit: 'Poli KIA / KB', hadir: 20, izin: 1, lambat: 2, percent: 92 },
-            { nip: '199211082019032009', nama: 'Apt. Rina Lestari, S.Farm', unit: 'Farmasi', hadir: 21, izin: 1, lambat: 0, percent: 96 },
-            { nip: '198704152014021001', nama: 'Eko Prasetyo, A.Md', unit: 'Tata Usaha', hadir: 22, izin: 0, lambat: 0, percent: 100 }
-        ];
-
-        // System Users Data
-        let systemUsers = [
-            { nama: 'H. Achmad, M.Kes', nip: '197508102000031001', jabatan: 'Kepala Puskesmas', role: 'kapus', status: 'Aktif' },
-            { nama: 'Administrator IT', nip: '199001012015011001', jabatan: 'Admin System', role: 'admin', status: 'Aktif' },
-            { nama: 'dr. Budi Santoso', nip: '198803122015031002', jabatan: 'Dokter Fungsional', role: 'pegawai', status: 'Aktif' },
-            { nama: 'Ns. Andi Wijaya, S.Kep', nip: '198501222010011003', jabatan: 'Perawat Penyelia', role: 'pegawai', status: 'Aktif' }
-        ];
-
+        // INITIALIZATION
         window.onload = function() {
-            // Update live clock
-            setInterval(updateTime, 1000);
-            updateTime();
+            saveToStorage();
+            initCharts();
+            updateClock();
+            setInterval(updateClock, 1000);
 
-            // Check existing session
-            const savedUser = localStorage.getItem('eportal_user');
-            if(savedUser && userDatabase[savedUser]) {
-                loginUser(userDatabase[savedUser]);
+            if (currentUser) {
+                showApp();
+            } else {
+                document.getElementById('loginOverlay').classList.remove('hidden');
             }
-
-            // Setup Mobile Navigation Toggle
-            document.getElementById('open-sidebar-btn').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.remove('-translate-x-full');
-            });
-            document.getElementById('close-sidebar-btn').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.add('-translate-x-full');
-            });
         };
 
-        function fillDemoAccount(username, password) {
-            document.getElementById('login-username').value = username;
-            document.getElementById('login-password').value = password;
+        function saveToStorage() {
+            localStorage.setItem('portal_pegawai_db', JSON.stringify(currentPegawaiList));
+            localStorage.setItem('portal_absensi_logs', JSON.stringify(absensiLogs));
+            localStorage.setItem('portal_cuti_list', JSON.stringify(cutiList));
+            localStorage.setItem('portal_aduan_list', JSON.stringify(aduanList));
+        }
+
+        // LOGIN / LOGOUT
+        function quickFill(u, p) {
+            document.getElementById('loginUsername').value = u;
+            document.getElementById('loginPassword').value = p;
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('login-username').value.trim().toLowerCase();
-            const p = document.getElementById('login-password').value;
-            const errBox = document.getElementById('login-error-msg');
+            const u = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const p = document.getElementById('loginPassword').value.trim();
 
-            if(userDatabase[u] && userDatabase[u].password === p) {
-                errBox.classList.add('hidden');
-                if(document.getElementById('remember-me').checked) {
-                    localStorage.setItem('eportal_user', u);
-                }
-                loginUser(userDatabase[u]);
-                showToast('Login Berhasil', `Selamat datang kembali, ${userDatabase[u].name}!`, 'success');
+            const found = currentPegawaiList.find(x => x.username.toLowerCase() === u && x.pass === p);
+
+            if (found) {
+                currentUser = found;
+                localStorage.setItem('portal_logged_user', JSON.stringify(currentUser));
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('loginError').classList.add('hidden');
+                showApp();
             } else {
-                errBox.classList.remove('hidden');
+                document.getElementById('loginError').classList.remove('hidden');
             }
-        }
-
-        function loginUser(userData) {
-            currentUser = userData;
-
-            // Update UI with User Info
-            document.getElementById('sidebar-user-name').innerText = currentUser.name;
-            document.getElementById('sidebar-user-role-badge').innerText = currentUser.roleTitle;
-            document.getElementById('sidebar-user-avatar').src = currentUser.avatar;
-            document.getElementById('header-user-display').innerText = currentUser.name;
-
-            // Apply Role Protections
-            const adminMenus = document.querySelectorAll('.admin-only');
-            if(currentUser.role === 'admin' || currentUser.role === 'kapus') {
-                adminMenus.forEach(el => el.classList.remove('hidden'));
-            } else {
-                adminMenus.forEach(el => el.classList.add('hidden'));
-            }
-
-            // Toggle Screens
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-
-            // Render Views & Init Charts
-            renderQuickLinks();
-            renderUserAttendanceTable();
-            renderCutiTable();
-            renderAduanList();
-            renderAppLinks();
-            renderRekapTable();
-            renderUsersTable();
-            initCharts();
-
-            switchTab('dashboard');
         }
 
         function handleLogout() {
-            localStorage.removeItem('eportal_user');
             currentUser = null;
-            document.getElementById('app').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-form').reset();
-            showToast('Logout Selesai', 'Sesi Anda telah aman dibersihkan.', 'info');
+            localStorage.removeItem('portal_logged_user');
+            document.getElementById('appContainer').classList.add('hidden');
+            document.getElementById('loginOverlay').classList.remove('hidden');
         }
 
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('id-ID') + ' WIB';
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('id-ID', options);
+        function showApp() {
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = currentUser.nama;
+            document.getElementById('userRoleBadge').innerText = `${currentUser.jabatan} (${currentUser.role})`;
+            document.getElementById('userAvatar').innerText = currentUser.nama.substring(0, 2).toUpperCase();
 
-            if(document.getElementById('live-time')) document.getElementById('live-time').innerText = timeStr;
-            if(document.getElementById('live-date')) document.getElementById('live-date').innerText = dateStr;
-            if(document.getElementById('absen-clock')) document.getElementById('absen-clock').innerText = timeStr;
-            if(document.getElementById('absen-date')) document.getElementById('absen-date').innerText = dateStr;
+            // Populate Pelimpahan Cuti Dropdown
+            const selectPelimpahan = document.getElementById('cutiPelimpahanTo');
+            selectPelimpahan.innerHTML = currentPegawaiList.map(p => `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`).join('');
+
+            renderPegawaiTable();
+            renderAbsensiLogs();
+            renderCutiTable();
+            renderAduanList();
+            switchTab('dashboard');
         }
 
-        // --- NAVIGATION & TABS ---
+        // NAVIGATION TABS
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            
-            const targetTab = document.getElementById(`tab-${tabId}`);
-            if(targetTab) targetTab.classList.remove('hidden');
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if(link.getAttribute('data-tab') === tabId) {
-                    link.classList.add('bg-brand-600', 'text-white');
-                    link.classList.remove('text-slate-300', 'hover:bg-slate-800');
-                } else {
-                    link.classList.remove('bg-brand-600', 'text-white');
-                    link.classList.add('text-slate-300', 'hover:bg-slate-800');
-                }
+            const tabs = ['dashboard', 'pegawai', 'absensi', 'cuti', 'links', 'aduan'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const nav = document.getElementById(`nav-${t}`);
+                if (sec) sec.classList.add('hidden');
+                if (nav) nav.classList.remove('sidebar-item-active');
             });
 
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) activeNav.classList.add('sidebar-item-active');
+
+            // Titles
             const titles = {
-                'dashboard': 'Dashboard & Analisa Utama',
-                'absensi': 'Portal Presensi Pegawai',
-                'cuti': 'Pengajuan Cuti & Pelimpahan Tugas',
-                'aduan': 'Saran & Aduan Internal Staf',
-                'applinks': 'Shortcut Aplikasi Kesehatan',
-                'rekap-absen': 'Laporan Rekap Absensi Staf',
-                'users': 'Manajemen Hak Akses Pengguna'
+                dashboard: ["Dashboard & Analisa", "Ringkasan statistik & indikator kinerja Puskesmas Hari Ini"],
+                pegawai: ["Daftar Pegawai & Hak Akses", "Master Data Pegawai UPT Sentolo II & Management User Access"],
+                absensi: ["Portal Absensi Staf", "Presensi GPS & Swafoto Real-time Pegawai"],
+                cuti: ["Ijin Cuti & Pelimpahan Tugas", "Pengajuan Cuti & Penunjukan Pegawai Pengganti"],
+                links: ["Shortcut Aplikasi Puskesmas", "Pintas Akses Cepat Aplikasi Kesehatan Terintegrasi"],
+                aduan: ["Saran & Aduan Internal", "Aspirasi & Masukan Internal Staf Puskesmas"]
             };
-            document.getElementById('page-title').innerText = titles[tabId] || 'E-Portal Puskesmas';
-
-            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('pageTitle').innerText = titles[tabId][0];
+            document.getElementById('pageSubtitle').innerText = titles[tabId][1];
         }
 
-        // --- DATA RENDERING FUNCTIONS ---
-        function renderQuickLinks() {
-            const container = document.getElementById('quick-links-dashboard');
-            if(!container) return;
-            container.innerHTML = appLinks.slice(0, 6).map(app => `
-                <a href="${app.url}" target="_blank" class="p-3 bg-slate-50 border border-slate-200/70 hover:border-brand-500 hover:shadow-md rounded-xl transition flex flex-col items-center text-center group">
-                    <div class="w-10 h-10 rounded-lg ${app.color} text-white flex items-center justify-center text-lg mb-2 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid ${app.icon}"></i>
-                    </div>
-                    <span class="text-xs font-bold text-slate-800 group-hover:text-brand-600 line-clamp-1">${app.name}</span>
-                    <span class="text-[10px] text-slate-400 mt-0.5">${app.category}</span>
-                </a>
-            `).join('');
-        }
+        // PEGAWAI & HAK AKSES MANAGEMENT
+        function renderPegawaiTable() {
+            const tbody = document.getElementById('pegawaiTableBody');
+            const search = document.getElementById('searchPegawai').value.toLowerCase();
+            const filter = document.getElementById('filterRole').value;
 
-        function renderUserAttendanceTable() {
-            const tbody = document.getElementById('user-attendance-table-body');
-            if(!tbody) return;
-            tbody.innerHTML = personalAttendance.map(item => `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="p-3 font-semibold text-slate-700">${item.date}</td>
-                    <td class="p-3 font-mono text-emerald-600">${item.checkIn}</td>
-                    <td class="p-3 font-mono text-rose-600">${item.checkOut}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 text-[11px] font-medium rounded-md ${item.badge}">${item.status}</span></td>
-                    <td class="p-3 text-right">
-                        <button onclick="showToast('Detail Presensi', 'Lokasi terverifikasi via GPS Puskesmas (-7.795, 110.369)', 'info')" class="text-slate-400 hover:text-slate-600">
-                            <i class="fa-solid fa-circle-info"></i>
+            const filtered = currentPegawaiList.filter(p => {
+                const matchSearch = p.nama.toLowerCase().includes(search) || p.jabatan.toLowerCase().includes(search);
+                const matchRole = filter === 'ALL' || p.role === filter;
+                return matchSearch && matchRole;
+            });
+
+            tbody.innerHTML = filtered.map((p, idx) => `
+                <tr class="hover:bg-slate-50 transition-all">
+                    <td class="p-3 font-semibold text-slate-400">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${p.nama}</td>
+                    <td class="p-3 text-slate-600 font-medium">${p.jabatan}</td>
+                    <td class="p-3 font-mono text-teal-700 bg-teal-50/50 rounded-lg">${p.username}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${getRoleBadgeClass(p.role)}">
+                            ${p.role}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">
+                            ${p.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="openEditPegawaiModal(${p.id})" class="px-2.5 py-1 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 rounded-lg text-xs font-semibold transition-all">
+                            <i class="fa-solid fa-user-pen mr-1"></i> Edit Akses
                         </button>
                     </td>
                 </tr>
             `).join('');
+
+            document.getElementById('statTotalPegawai').innerText = currentPegawaiList.length;
         }
 
-        function handleAbsen(type) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-            const dateStr = now.toISOString().split('T')[0];
-
-            if(type === 'Masuk') {
-                personalAttendance.unshift({
-                    date: dateStr,
-                    checkIn: timeStr,
-                    checkOut: '--:--',
-                    status: 'Hadir Tepat Waktu',
-                    badge: 'bg-emerald-100 text-emerald-700'
-                });
-                showToast('Absen Masuk Berhasil!', `Waktu dicatat: ${timeStr}. Selamat bertugas!`, 'success');
-            } else {
-                if(personalAttendance.length > 0) {
-                    personalAttendance[0].checkOut = timeStr;
-                }
-                showToast('Absen Pulang Berhasil!', `Waktu dicatat: ${timeStr}. Hati-hati di jalan!`, 'success');
+        function getRoleBadgeClass(role) {
+            switch(role) {
+                case 'Kepala Puskesmas': return 'bg-purple-100 text-purple-700';
+                case 'Admin': return 'bg-rose-100 text-rose-700';
+                case 'Dokter': return 'bg-indigo-100 text-indigo-700';
+                case 'Perawat': return 'bg-teal-100 text-teal-700';
+                case 'Bidan': return 'bg-pink-100 text-pink-700';
+                default: return 'bg-slate-100 text-slate-700';
             }
-            renderUserAttendanceTable();
+        }
+
+        function filterPegawaiTable() {
+            renderPegawaiTable();
+        }
+
+        function openEditPegawaiModal(id) {
+            const p = currentPegawaiList.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('editPegawaiId').value = p.id;
+            document.getElementById('editNama').value = p.nama;
+            document.getElementById('editJabatan').value = p.jabatan;
+            document.getElementById('editRole').value = p.role;
+            document.getElementById('editPassword').value = p.pass;
+
+            document.getElementById('editPegawaiModal').classList.remove('hidden');
+        }
+
+        function closeEditPegawaiModal() {
+            document.getElementById('editPegawaiModal').classList.add('hidden');
+        }
+
+        function savePegawaiSetting(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editPegawaiId').value);
+            const newRole = document.getElementById('editRole').value;
+            const newPass = document.getElementById('editPassword').value.trim();
+
+            const p = currentPegawaiList.find(x => x.id === id);
+            if (p) {
+                p.role = newRole;
+                if (newPass) p.pass = newPass;
+                saveToStorage();
+                renderPegawaiTable();
+                closeEditPegawaiModal();
+                alert(`Hak Akses & Password untuk ${p.nama} berhasil diperbarui!`);
+            }
+        }
+
+        // ABSENSI
+        function submitAbsensi(e) {
+            e.preventDefault();
+            const status = document.getElementById('absensiStatus').value;
+            const ket = document.getElementById('absensiKet').value;
+
+            const newLog = {
+                waktu: new Date().toLocaleTimeString('id-ID'),
+                nama: currentUser.nama,
+                jabatan: currentUser.jabatan,
+                tipe: status,
+                gps: "-7.868, 110.151 (Valid)"
+            };
+
+            absensiLogs.unshift(newLog);
+            saveToStorage();
+            renderAbsensiLogs();
+            document.getElementById('absensiKet').value = '';
+            alert('Presensi berhasil dicatat!');
+        }
+
+        function renderAbsensiLogs() {
+            const tbody = document.getElementById('absensiLogsBody');
+            tbody.innerHTML = absensiLogs.slice(0, 10).map(l => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-mono text-slate-500">${l.waktu}</td>
+                    <td class="p-2.5 font-bold text-slate-800">${l.nama}</td>
+                    <td class="p-2.5 text-slate-500">${l.jabatan}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-[10px] font-semibold">${l.tipe}</span></td>
+                    <td class="p-2.5 text-emerald-600 font-medium"><i class="fa-solid fa-circle-check"></i> GPS Verified</td>
+                </tr>
+            `).join('');
+        }
+
+        function exportAbsensiCSV() {
+            let csv = "Waktu,Nama,Jabatan,Tipe,GPS\n";
+            absensiLogs.forEach(l => {
+                csv += `"${l.waktu}","${l.nama}","${l.jabatan}","${l.tipe}","${l.gps}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Presensi_SentoloII_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+        }
+
+        // CUTI
+        function submitCuti(e) {
+            e.preventDefault();
+            const newCuti = {
+                id: Date.now(),
+                pemohon: currentUser.nama,
+                jenis: document.getElementById('cutiJenis').value,
+                tgl: `${document.getElementById('cutiTglMulai').value} s/d ${document.getElementById('cutiTglSelesai').value}`,
+                penerima: document.getElementById('cutiPelimpahanTo').value,
+                status: "Pending Approval"
+            };
+
+            cutiList.unshift(newCuti);
+            saveToStorage();
+            renderCutiTable();
+            alert('Permohonan Cuti & Pelimpahan Tugas Berhasil Dikirim!');
         }
 
         function renderCutiTable() {
-            const tbody = document.getElementById('cuti-table-body');
-            const searchVal = document.getElementById('search-cuti')?.value.toLowerCase() || '';
-            if(!tbody) return;
-
-            const filtered = leaveRequests.filter(req => 
-                req.name.toLowerCase().includes(searchVal) || req.jenis.toLowerCase().includes(searchVal)
-            );
-
-            tbody.innerHTML = filtered.map(req => {
-                let badgeClass = 'bg-amber-100 text-amber-800';
-                if(req.status === 'Disetujui') badgeClass = 'bg-emerald-100 text-emerald-800';
-                if(req.status === 'Ditolak') badgeClass = 'bg-rose-100 text-rose-800';
-
-                const canApprove = (currentUser && (currentUser.role === 'admin' || currentUser.role === 'kapus'));
-
-                return `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="p-3">
-                        <div class="font-semibold text-slate-800">${req.name}</div>
-                        <div class="text-[10px] text-slate-400">Tugas: ${req.tugas}</div>
+            const tbody = document.getElementById('cutiTableBody');
+            tbody.innerHTML = cutiList.map(c => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-800">${c.pemohon}</td>
+                    <td class="p-3 font-medium text-slate-600">${c.jenis}</td>
+                    <td class="p-3 text-slate-500">${c.tgl}</td>
+                    <td class="p-3 font-medium text-teal-700">${c.penerima}</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${c.status === 'Disetujui' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${c.status}
+                        </span>
                     </td>
-                    <td class="p-3">
-                        <div class="font-medium text-slate-700">${req.jenis}</div>
-                        <div class="text-[11px] text-slate-500">${req.tgl}</div>
-                    </td>
-                    <td class="p-3 text-slate-700 font-medium">${req.pengganti}</td>
-                    <td class="p-3"><span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full ${badgeClass}">${req.status}</span></td>
-                    <td class="p-3 text-right">
-                        ${canApprove && req.status === 'Pending' ? `
-                            <div class="flex items-center justify-end gap-1">
-                                <button onclick="approveCuti(${req.id}, 'Disetujui')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-semibold">Setujui</button>
-                                <button onclick="approveCuti(${req.id}, 'Ditolak')" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-semibold">Tolak</button>
-                            </div>
-                        ` : `<span class="text-slate-400 text-[11px] italic">Tidak ada aksi</span>`}
+                    <td class="p-3 text-center">
+                        ${currentUser.role === 'Kepala Puskesmas' || currentUser.role === 'Admin' ? `
+                            <button onclick="approveCuti(${c.id})" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold">Setujui</button>
+                        ` : '-'}
                     </td>
                 </tr>
-            `}).join('');
+            `).join('');
         }
 
-        function submitCuti(e) {
-            e.preventDefault();
-            const jenis = document.getElementById('jenis-cuti').value;
-            const mulai = document.getElementById('mulai-cuti').value;
-            const selesai = document.getElementById('selesai-cuti').value;
-            const pengganti = document.getElementById('penerima-tugas').value;
-            const rincian = document.getElementById('rincian-tugas').value;
-
-            leaveRequests.unshift({
-                id: Date.now(),
-                name: currentUser ? currentUser.name : 'Staf Pegawai',
-                jenis: jenis,
-                tgl: `${mulai} s/d ${selesai}`,
-                pengganti: pengganti,
-                status: 'Pending',
-                tugas: rincian
-            });
-
-            renderCutiTable();
-            document.getElementById('form-cuti').reset();
-            showToast('Pengajuan Terkirim', 'Permohonan cuti & pelimpahan tugas berhasil disampaikan.', 'success');
-        }
-
-        function approveCuti(id, status) {
-            const req = leaveRequests.find(r => r.id === id);
-            if(req) {
-                req.status = status;
+        function approveCuti(id) {
+            const item = cutiList.find(x => x.id === id);
+            if (item) {
+                item.status = "Disetujui";
+                saveToStorage();
                 renderCutiTable();
-                showToast('Status Cuti Diperbarui', `Permohonan cuti ${req.name} telah status: ${status}`, 'info');
             }
+        }
+
+        // ADUAN
+        function submitAduan(e) {
+            e.preventDefault();
+            const anon = document.getElementById('aduanAnonim').checked;
+            const item = {
+                id: Date.now(),
+                pengirim: anon ? "Anonim Staf" : currentUser.nama,
+                kategori: document.getElementById('aduanKategori').value,
+                isi: document.getElementById('aduanIsi').value,
+                tgl: new Date().toLocaleDateString('id-ID'),
+                status: "Terkirim"
+            };
+            aduanList.unshift(item);
+            saveToStorage();
+            renderAduanList();
+            document.getElementById('aduanIsi').value = '';
+            alert('Aduan Internal Berhasil Dikirim!');
         }
 
         function renderAduanList() {
-            const container = document.getElementById('aduan-list');
-            if(!container) return;
-
-            container.innerHTML = complaints.map(c => `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2 py-0.5 bg-sky-100 text-sky-800 text-[10px] font-bold rounded-md">${c.kategori}</span>
-                        <span class="text-[11px] text-slate-400">${c.date}</span>
+            const container = document.getElementById('aduanListContainer');
+            container.innerHTML = aduanList.map(a => `
+                <div class="p-4 bg-white border border-slate-200 rounded-xl space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-800">${a.pengirim}</span>
+                        <span class="text-[10px] px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-bold">${a.kategori}</span>
                     </div>
-                    <h4 class="font-bold text-slate-800 text-sm">${c.subjek}</h4>
-                    <p class="text-xs text-slate-600 leading-relaxed">${c.isi}</p>
-                    <div class="pt-2 flex items-center justify-between border-t border-slate-200/60 text-[11px]">
-                        <span class="text-slate-500">Oleh: <strong class="text-slate-700">${c.anonim ? '🔒 Anonim Staf' : c.sender}</strong></span>
-                        <span class="font-semibold text-sky-600"><i class="fa-solid fa-spinner animate-spin mr-1"></i> ${c.status}</span>
+                    <p class="text-xs text-slate-600">${a.isi}</p>
+                    <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-100">
+                        <span><i class="fa-solid fa-clock mr-1"></i> ${a.tgl}</span>
+                        <span class="font-bold text-amber-600">${a.status}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function submitAduan(e) {
+        // DRIVE CONFIG MODAL
+        function openDriveConfigModal() {
+            document.getElementById('driveScriptUrl').value = driveScriptUrl;
+            document.getElementById('driveConfigModal').classList.remove('hidden');
+        }
+
+        function closeDriveConfigModal() {
+            document.getElementById('driveConfigModal').classList.add('hidden');
+        }
+
+        function saveDriveConfig(e) {
             e.preventDefault();
-            const kategori = document.getElementById('kategori-aduan').value;
-            const isAnonim = document.querySelector('input[name="anonim"]:checked').value === 'true';
-            const subjek = document.getElementById('subjek-aduan').value;
-            const isi = document.getElementById('isi-aduan').value;
-
-            complaints.unshift({
-                id: Date.now(),
-                kategori: kategori,
-                subjek: subjek,
-                isi: isi,
-                sender: currentUser ? currentUser.name : 'Staf Pegawai',
-                anonim: isAnonim,
-                date: 'Hari Ini',
-                status: 'Menunggu Review'
-            });
-
-            renderAduanList();
-            document.getElementById('form-aduan').reset();
-            showToast('Terima Kasih', 'Saran / Aduan Anda berhasil dikirim secara aman.', 'success');
+            driveScriptUrl = document.getElementById('driveScriptUrl').value.trim();
+            localStorage.setItem('portal_drive_url', driveScriptUrl);
+            if (driveScriptUrl) {
+                document.getElementById('dbSyncBadge').classList.remove('hidden');
+            }
+            closeDriveConfigModal();
+            alert('Konfigurasi Database Google Drive Disimpan!');
         }
 
-        function renderAppLinks() {
-            const grid = document.getElementById('app-links-grid');
-            const searchVal = document.getElementById('search-apps')?.value.toLowerCase() || '';
-            if(!grid) return;
-
-            const filtered = appLinks.filter(a => a.name.toLowerCase().includes(searchVal) || a.desc.toLowerCase().includes(searchVal));
-
-            grid.innerHTML = filtered.map(app => `
-                <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl hover:shadow-md hover:border-brand-500 transition flex flex-col justify-between space-y-3">
-                    <div class="space-y-2">
-                        <div class="w-12 h-12 rounded-xl ${app.color} text-white flex items-center justify-center text-xl shadow-sm">
-                            <i class="fa-solid ${app.icon}"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-sm">${app.name}</h4>
-                            <p class="text-xs text-slate-500 leading-snug mt-1">${app.desc}</p>
-                        </div>
-                    </div>
-                    <a href="${app.url}" target="_blank" class="w-full py-2 bg-white border border-slate-200 hover:bg-brand-600 hover:text-white text-slate-700 font-semibold text-xs rounded-xl text-center transition flex items-center justify-center gap-1">
-                        Buka Aplikasi <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </a>
-                </div>
-            `).join('');
+        // UTILS & CHARTS
+        function updateClock() {
+            const now = new Date();
+            const str = now.toLocaleTimeString('id-ID') + ' WIB';
+            const el = document.getElementById('clockDisplay');
+            if (el) el.innerText = str;
         }
-
-        function renderRekapTable() {
-            const tbody = document.getElementById('rekap-table-body');
-            const filterUnit = document.getElementById('filter-unit')?.value || 'ALL';
-            const sortVal = document.getElementById('sort-rekap')?.value || 'nama';
-            const searchVal = document.getElementById('search-rekap')?.value.toLowerCase() || '';
-
-            if(!tbody) return;
-
-            let result = staffRecap.filter(s => {
-                const matchUnit = (filterUnit === 'ALL' || s.unit === filterUnit);
-                const matchSearch = s.nama.toLowerCase().includes(searchVal) || s.nip.includes(searchVal);
-                return matchUnit && matchSearch;
-            });
-
-            if(sortVal === 'kehadiran') result.sort((a,b) => b.percent - a.percent);
-            else if(sortVal === 'terlambat') result.sort((a,b) => b.lambat - a.lambat);
-            else result.sort((a,b) => a.nama.localeCompare(b.nama));
-
-            tbody.innerHTML = result.map(s => `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="p-3">
-                        <div class="font-bold text-slate-800">${s.nama}</div>
-                        <div class="text-[10px] text-slate-400">NIP: ${s.nip}</div>
-                    </td>
-                    <td class="p-3 font-medium text-slate-600">${s.unit}</td>
-                    <td class="p-3 text-center font-semibold text-emerald-600">${s.hadir} hr</td>
-                    <td class="p-3 text-center font-semibold text-amber-600">${s.izin} hr</td>
-                    <td class="p-3 text-center font-semibold text-rose-600">${s.lambat} kali</td>
-                    <td class="p-3 text-center">
-                        <div class="w-full bg-slate-200 rounded-full h-2 mb-1 overflow-hidden">
-                            <div class="bg-brand-600 h-2 rounded-full" style="width: ${s.percent}%"></div>
-                        </div>
-                        <span class="text-[10px] font-bold text-slate-700">${s.percent}%</span>
-                    </td>
-                    <td class="p-3 text-right">
-                        <button onclick="showToast('Ekspor Staf', 'Mencetak kartu rincian presensi individu.', 'info')" class="text-brand-600 hover:text-brand-800 font-medium">Rincian</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderUsersTable() {
-            const tbody = document.getElementById('users-table-body');
-            if(!tbody) return;
-
-            tbody.innerHTML = systemUsers.map((u, i) => `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="p-3">
-                        <div class="font-bold text-slate-800">${u.nama}</div>
-                        <div class="text-[10px] text-slate-400">NIP: ${u.nip}</div>
-                    </td>
-                    <td class="p-3 text-slate-600 font-medium">${u.jabatan}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full ${u.role === 'admin' || u.role === 'kapus' ? 'bg-rose-100 text-rose-800' : 'bg-brand-100 text-brand-800'}">
-                            ${u.role.toUpperCase()}
-                        </span>
-                    </td>
-                    <td class="p-3"><span class="text-emerald-600 font-semibold"><i class="fa-solid fa-circle text-[8px] mr-1"></i> ${u.status}</span></td>
-                    <td class="p-3 text-right">
-                        <select onchange="updateUserRole(${i}, this.value)" class="text-xs border border-slate-200 rounded p-1 bg-white">
-                            <option value="pegawai" ${u.role === 'pegawai' ? 'selected' : ''}>Pegawai</option>
-                            <option value="kapus" ${u.role === 'kapus' ? 'selected' : ''}>Kapus</option>
-                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin System</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function updateUserRole(index, newRole) {
-            systemUsers[index].role = newRole;
-            showToast('Hak Akses Diperbarui', `Role ${systemUsers[index].nama} diubah menjadi ${newRole.toUpperCase()}`, 'success');
-        }
-
-        // --- CHARTS INITIALIZATION ---
-        let attendanceChartInstance = null;
-        let leaveChartInstance = null;
 
         function initCharts() {
-            const ctx1 = document.getElementById('attendanceChart')?.getContext('2d');
-            if(ctx1) {
-                if(attendanceChartInstance) attendanceChartInstance.destroy();
-                attendanceChartInstance = new Chart(ctx1, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
-                        datasets: [{
-                            label: 'Kehadiran (%)',
-                            data: [92, 94, 91, 95, 96, 93, 97, 95, 98],
-                            borderColor: '#0d9488',
-                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#0d9488',
-                            pointRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { min: 80, max: 100 } }
-                    }
-                });
-            }
-
-            const ctx2 = document.getElementById('leaveDistributionChart')?.getContext('2d');
-            if(ctx2) {
-                if(leaveChartInstance) leaveChartInstance.destroy();
-                leaveChartInstance = new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Cuti Tahunan', 'Cuti Sakit', 'Cuti Melahirkan', 'Cuti Alasan Penting'],
-                        datasets: [{
-                            data: [55, 20, 10, 15],
-                            backgroundColor: ['#14b8a6', '#f59e0b', '#ec4899', '#0284c7']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
-                    }
-                });
-            }
-        }
-
-        // --- TOASTS & EXPORT UTILITIES ---
-        function showToast(title, message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-
-            let bgColor = 'bg-slate-900 text-white';
-            let icon = 'fa-circle-info text-sky-400';
-
-            if(type === 'success') {
-                bgColor = 'bg-emerald-900 text-emerald-50 border border-emerald-700';
-                icon = 'fa-circle-check text-emerald-400';
-            } else if(type === 'error') {
-                bgColor = 'bg-rose-900 text-rose-50 border border-rose-700';
-                icon = 'fa-circle-xmark text-rose-400';
-            }
-
-            toast.className = `${bgColor} p-3.5 rounded-xl shadow-xl flex items-start space-x-3 text-xs pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0`;
-            toast.innerHTML = `
-                <i class="fa-solid ${icon} text-lg mt-0.5"></i>
-                <div class="flex-1">
-                    <h5 class="font-bold">${title}</h5>
-                    <p class="text-slate-300 mt-0.5">${message}</p>
-                </div>
-            `;
-
-            container.appendChild(toast);
-            
-            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,NIP,Nama,Unit,Hadir,Izin,Terlambat,Persentase\n";
-            staffRecap.forEach(row => {
-                csvContent += `${row.nip},"${row.nama}","${row.unit}",${row.hadir},${row.izin},${row.lambat},${row.percent}%\n`;
+            const ctx1 = document.getElementById('chartKehadiran').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Tgl 1', 'Tgl 2', 'Tgl 3', 'Tgl 4', 'Tgl 5', 'Tgl 6', 'Tgl 7'],
+                    datasets: [{
+                        label: 'Persentase Kehadiran (%)',
+                        data: [95, 98, 92, 96, 94, 97, 92.6],
+                        borderColor: '#0d9488',
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
             });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "rekap_absensi_puskesmas.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('Ekspor Berhasil', 'File CSV Rekap Absensi berhasil diunduh.', 'success');
-        }
 
-        function toggleNotifications() {
-            showToast('Notifikasi Sistem', 'Tidak ada pemberitahuan baru hari ini.', 'info');
+            const ctx2 = document.getElementById('chartCuti').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tahunan', 'Sakit', 'Melahirkan', 'Alasan Penting'],
+                    datasets: [{
+                        data: [12, 4, 2, 3],
+                        backgroundColor: ['#0d9488', '#f59e0b', '#ec4899', '#6366f1']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
         }
     </script>
 </body>
