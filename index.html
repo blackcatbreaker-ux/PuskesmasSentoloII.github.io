@@ -1,445 +1,49 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>e-Portal Puskesmas</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNC Edukasi</title>
+  <link rel="icon" href="https://static.vecteezy.com/system/resources/previews/016/716/181/large_2x/website-3d-icon-png.png" type="image/x-icon">
   <style>
-    body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .navbar { background: linear-gradient(135deg, #0d6efd, #0dcaf0); }
-    .card-app { transition: transform 0.2s, box-shadow 0.2s; border: none; border-radius: 12px; }
-    .card-app:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-    .icon-box { font-size: 2rem; color: #0d6efd; }
-    .nav-pills .nav-link.active { background-color: #0d6efd; border-radius: 8px; }
-    .metric-card { border-left: 4px solid #0d6efd; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: #666;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
-
-  <!-- Header / Navbar -->
-  <nav class="navbar navbar-dark mb-4 shadow-sm">
-    <div class="container">
-      <span class="navbar-brand mb-0 h1 fw-bold"><i class="bi bi-hospital me-2"></i>e-Portal Puskesmas</span>
-    </div>
-  </nav>
-
-  <div class="container pb-5">
-    
-    <!-- Tab Navigasi Utama -->
-    <ul class="nav nav-pills nav-fill mb-4 bg-white p-2 rounded-3 shadow-sm" id="pills-tab" role="tablist">
-      <li class="nav-item">
-        <button class="nav-link active fw-semibold" id="tab-home" data-bs-toggle="pill" data-bs-target="#content-home"><i class="bi bi-grid-fill me-1"></i> Aplikasi</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link fw-semibold" id="tab-absensi" data-bs-toggle="pill" data-bs-target="#content-absensi"><i class="bi bi-person-check-fill me-1"></i> Absensi</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link fw-semibold" id="tab-cuti" data-bs-toggle="pill" data-bs-target="#content-cuti"><i class="bi bi-calendar-event-fill me-1"></i> Cuti & Tugas</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link fw-semibold" id="tab-aduan" data-bs-toggle="pill" data-bs-target="#content-aduan"><i class="bi bi-chat-left-dots-fill me-1"></i> Saran & Aduan</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link fw-semibold" id="tab-dashboard" data-bs-toggle="pill" data-bs-target="#content-dashboard" onclick="loadDashboard()"><i class="bi bi-speedometer2 me-1"></i> Dashboard & Analisa</button>
-      </li>
-    </ul>
-
-    <div class="tab-content" id="pills-tabContent">
-      
-      <!-- 1. DASHBOARD LINK APLIKASI -->
-      <div class="tab-pane fade show active" id="content-home">
-        <h5 class="fw-bold mb-3 text-secondary">Aplikasi Lintas Sistem Puskesmas</h5>
-        <div class="row g-3">
-          <div class="col-6 col-md-3">
-            <a href="https://pcare.bpjs-kesehatan.go.id" target="_blank" class="text-decoration-none">
-              <div class="card card-app p-3 text-center h-100 shadow-sm">
-                <div class="icon-box mb-2"><i class="bi bi-heart-pulse"></i></div>
-                <h6 class="fw-bold text-dark mb-1">PCare BPJS</h6>
-                <small class="text-muted">Pelayanan Pasien BPJS</small>
-              </div>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="https://sehatindonesiaku.kemkes.go.id" target="_blank" class="text-decoration-none">
-              <div class="card card-app p-3 text-center h-100 shadow-sm">
-                <div class="icon-box mb-2"><i class="bi bi-shield-plus"></i></div>
-                <h6 class="fw-bold text-dark mb-1">ASIK Kemenkes</h6>
-                <small class="text-muted">Pencatatan Imunisasi/NCD</small>
-              </div>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="#" class="text-decoration-none">
-              <div class="card card-app p-3 text-center h-100 shadow-sm">
-                <div class="icon-box mb-2"><i class="bi bi-file-earmark-medical"></i></div>
-                <h6 class="fw-bold text-dark mb-1">e-Puskesmas / SIMPUS</h6>
-                <small class="text-muted">Rekam Medis Elektronik</small>
-              </div>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="#" class="text-decoration-none">
-              <div class="card card-app p-3 text-center h-100 shadow-sm">
-                <div class="icon-box mb-2"><i class="bi bi-box-seam"></i></div>
-                <h6 class="fw-bold text-dark mb-1">SGF / Logistik Obat</h6>
-                <small class="text-muted">Manajemen Farmasi</small>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. PORTAL ABSENSI -->
-      <div class="tab-pane fade" id="content-absensi">
-        <div class="row justify-content-center">
-          <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-3 p-4">
-              <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Presensi Pegawai</h5>
-              <form id="formAbsensi">
-                <div class="mb-3">
-                  <label class="form-label">Nama / NIP</label>
-                  <input type="text" class="form-control" name="nama" placeholder="Masukkan Nama & NIP" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Status Presensi</label>
-                  <select class="form-select" name="status" required>
-                    <option value="Hadir Masuk">Hadir Masuk</option>
-                    <option value="Hadir Pulang">Hadir Pulang</option>
-                    <option value="Dinas Luar">Dinas Luar</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Koordinat GPS</label>
-                  <div class="input-group">
-                    <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="Klik tombol Dapatkan Lokasi" readonly required>
-                    <button class="btn btn-outline-secondary" type="button" onclick="getLocation()"><i class="bi bi-crosshair"></i></button>
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-2">Kirim Presensi</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. IJIN CUTI & PELIMPAHAN TUGAS -->
-      <div class="tab-pane fade" id="content-cuti">
-        <div class="row justify-content-center">
-          <div class="col-md-7">
-            <div class="card border-0 shadow-sm rounded-3 p-4">
-              <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-person-fill text-warning me-2"></i>Pengajuan Cuti & Pelimpahan Tugas</h5>
-              <form id="formCuti">
-                <div class="mb-3">
-                  <label class="form-label">Nama Pemohon</label>
-                  <input type="text" class="form-control" name="nama" required>
-                </div>
-                <div class="row mb-3">
-                  <div class="col-6">
-                    <label class="form-label">Tanggal Mulai</label>
-                    <input type="date" class="form-control" name="tglMulai" required>
-                  </div>
-                  <div class="col-6">
-                    <label class="form-label">Tanggal Selesai</label>
-                    <input type="date" class="form-control" name="tglSelesai" required>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Jenis Cuti</label>
-                  <select class="form-select" name="jenisCuti" required>
-                    <option value="Cuti Tahunan">Cuti Tahunan</option>
-                    <option value="Cuti Sakit">Cuti Sakit</option>
-                    <option value="Cuti Melahirkan">Cuti Melahirkan</option>
-                    <option value="Cuti Alasan Penting">Cuti Alasan Penting</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Penerima Pelimpahan Tugas</label>
-                  <input type="text" class="form-control" name="pelimpahan" placeholder="Nama pegawai yang menggantikan" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Alasan Cuti / Catatan</label>
-                  <textarea class="form-control" name="alasan" rows="2" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Kirim Pengajuan</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. SARAN & ADUAN INTERNAL -->
-      <div class="tab-pane fade" id="content-aduan">
-        <div class="row justify-content-center">
-          <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-3 p-4">
-              <h5 class="fw-bold mb-3"><i class="bi bi-chat-square-text-fill text-info me-2"></i>Saran & Aduan Internal</h5>
-              <form id="formAduan">
-                <div class="mb-3">
-                  <label class="form-label">Nama Pengirim</label>
-                  <input type="text" class="form-control" id="inputNamaAduan" name="nama" placeholder="Isi nama Anda">
-                  <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" id="checkAnonim" name="anonim" onchange="toggleAnonim(this)">
-                    <label class="form-check-label text-muted" for="checkAnonim">
-                      Kirim secara Anonim (Rahasia)
-                    </label>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Kategori</label>
-                  <select class="form-select" name="kategori" required>
-                    <option value="Fasilitas / Sarpras">Fasilitas / Sarpras</option>
-                    <option value="Pelayanan / Operasional">Pelayanan / Operasional</option>
-                    <option value="Hubungan Kerja / SDM">Hubungan Kerja / SDM</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Isi Saran / Aduan</label>
-                  <textarea class="form-control" name="pesan" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Kirim Masukan</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5. TAB DASHBOARD, GRAFIK, SORTING & ANALISA -->
-      <div class="tab-pane fade" id="content-dashboard">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4 class="fw-bold m-0"><i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Dashboard Executive & Analisa</h4>
-          <button class="btn btn-sm btn-outline-primary" onclick="loadDashboard()"><i class="bi bi-arrow-clockwise me-1"></i> Refresh Data</button>
-        </div>
-
-        <!-- Kartu Metric Ringkasan Analisa -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-4">
-            <div class="card p-3 bg-white shadow-sm metric-card">
-              <small class="text-muted fw-bold">TOTAL PRESENSI</small>
-              <h2 class="fw-bold mb-0 text-primary" id="metric-absensi">0</h2>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card p-3 bg-white shadow-sm metric-card border-warning">
-              <small class="text-muted fw-bold">TOTAL PENGAJUAN CUTI</small>
-              <h2 class="fw-bold mb-0 text-warning" id="metric-cuti">0</h2>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card p-3 bg-white shadow-sm metric-card border-info">
-              <small class="text-muted fw-bold">TOTAL ADUAN / SARAN</small>
-              <h2 class="fw-bold mb-0 text-info" id="metric-aduan">0</h2>
-            </div>
-          </div>
-        </div>
-
-        <!-- Grafik Visualisasi -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <div class="card p-3 shadow-sm border-0">
-              <h6 class="fw-bold text-secondary mb-3">Distribusi Status Presensi</h6>
-              <canvas id="chartAbsensi" style="max-height: 250px;"></canvas>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-3 shadow-sm border-0">
-              <h6 class="fw-bold text-secondary mb-3">Kategori Aduan Internal</h6>
-              <canvas id="chartAduan" style="max-height: 250px;"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabel Data Interaktif dengan Fitur Sort By -->
-        <div class="card border-0 shadow-sm p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold m-0">Data Riwayat Presensi</h5>
-            <div class="d-flex align-items-center gap-2">
-              <label class="text-nowrap small text-muted">Sort By:</label>
-              <select class="form-select form-select-sm" id="sortOption" onchange="renderTableAbsensi()">
-                <option value="desc">Terbaru → Terlama</option>
-                <option value="asc">Terlama → Terbaru</option>
-                <option value="nama">Nama (A-Z)</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Waktu</th>
-                  <th>Nama / NIP</th>
-                  <th>Status</th>
-                  <th>Lokasi GPS</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-absensi">
-                <tr><td colspan="4" class="text-center text-muted">Memuat data...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
+  <div class="iframe-container">
+    <div class="loader" id="loader">Loading app...</div>
+    <iframe 
+      src="https://script.google.com/macros/s/AKfycbw00LyzA0ja-31OkiWHGCGXefRAl2MM5ZdAVzRkJX0Dd-uinCSX6gsaXKzn74a5tglsHw/exec" 
+      title="JNCfy Web App"
+      onload="document.getElementById('loader').style.display='none';"
+      allowfullscreen>
+    </iframe>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Variable Global untuk Menyimpan Data
-    let globalData = { absensi: [], cuti: [], aduan: [] };
-    let chartAbsensiInstance = null;
-    let chartAduanInstance = null;
-
-    // Ambil Lokasi GPS
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(pos) {
-          document.getElementById('lokasi').value = pos.coords.latitude + ", " + pos.coords.longitude;
-        }, function() {
-          alert("Gagal mengambil lokasi. Pastikan izin GPS aktif.");
-        });
-      } else {
-        alert("Browser Anda tidak mendukung Geolocation.");
-      }
-    }
-
-    // Toggle Input Anonim
-    function toggleAnonim(checkbox) {
-      const inputNama = document.getElementById('inputNamaAduan');
-      if (checkbox.checked) {
-        inputNama.value = '';
-        inputNama.disabled = true;
-      } else {
-        inputNama.disabled = false;
-      }
-    }
-
-    // Submit Handler Universal
-    function bindForm(formId, serverFunction) {
-      document.getElementById(formId).addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = Object.fromEntries(new FormData(this));
-        
-        google.script.run.withSuccessHandler(function(res) {
-          alert(res.message);
-          if(res.success) document.getElementById(formId).reset();
-        })[serverFunction](formData);
-      });
-    }
-
-    bindForm('formAbsensi', 'submitAbsensi');
-    bindForm('formCuti', 'submitCuti');
-    bindForm('formAduan', 'submitAduan');
-
-    // -------------------------------------------------------------
-    // LOGIKA DASHBOARD, CHART, & SORTING
-    // -------------------------------------------------------------
-
-    function loadDashboard() {
-      google.script.run.withSuccessHandler(function(res) {
-        if (res.success) {
-          globalData = res;
-          
-          // 1. Update Metrics Summary
-          document.getElementById('metric-absensi').innerText = res.absensi.length;
-          document.getElementById('metric-cuti').innerText = res.cuti.length;
-          document.getElementById('metric-aduan').innerText = res.aduan.length;
-
-          // 2. Render Grafik & Tabel
-          renderCharts();
-          renderTableAbsensi();
-        } else {
-          alert("Gagal mengambil data dashboard: " + res.message);
-        }
-      }).getDashboardData();
-    }
-
-    function renderTableAbsensi() {
-      const tbody = document.getElementById('tbody-absensi');
-      const sortVal = document.getElementById('sortOption').value;
-      let data = [...globalData.absensi];
-
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Belum ada data presensi.</td></tr>';
-        return;
-      }
-
-      // Logika Sorting
-      data.sort((a, b) => {
-        if (sortVal === 'asc') return new Date(a.Timestamp) - new Date(b.Timestamp);
-        if (sortVal === 'desc') return new Date(b.Timestamp) - new Date(a.Timestamp);
-        if (sortVal === 'nama') return a['NIP/Nama'].localeCompare(b['NIP/Nama']);
-      });
-
-      // Render Baris Tabel
-      tbody.innerHTML = data.map(item => `
-        <tr>
-          <td><small class="text-muted">${item.Timestamp || '-'}</small></td>
-          <td class="fw-semibold">${item['NIP/Nama'] || '-'}</td>
-          <td><span class="badge ${getBadgeStatus(item.Status)}">${item.Status || '-'}</span></td>
-          <td><small class="text-secondary"><i class="bi bi-geo-alt"></i> ${item['Lokasi (Lat,Long)'] || '-'}</small></td>
-        </tr>
-      `).join('');
-    }
-
-    function getBadgeStatus(status) {
-      if (status === 'Hadir Masuk') return 'bg-success';
-      if (status === 'Hadir Pulang') return 'bg-secondary';
-      if (status === 'Dinas Luar') return 'bg-warning text-dark';
-      return 'bg-info';
-    }
-
-    function renderCharts() {
-      // 1. Olah Data Grafik Absensi
-      const statusCounts = {};
-      globalData.absensi.forEach(item => {
-        statusCounts[item.Status] = (statusCounts[item.Status] || 0) + 1;
-      });
-
-      if (chartAbsensiInstance) chartAbsensiInstance.destroy();
-      const ctx1 = document.getElementById('chartAbsensi').getContext('2d');
-      chartAbsensiInstance = new Chart(ctx1, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(statusCounts),
-          datasets: [{
-            data: Object.values(statusCounts),
-            backgroundColor: ['#198754', '#6c757d', '#ffc107', '#0dcaf0']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-
-      // 2. Olah Data Grafik Kategori Aduan
-      const aduanCounts = {};
-      globalData.aduan.forEach(item => {
-        aduanCounts[item.Kategori] = (aduanCounts[item.Kategori] || 0) + 1;
-      });
-
-      if (chartAduanInstance) chartAduanInstance.destroy();
-      const ctx2 = document.getElementById('chartAduan').getContext('2d');
-      chartAduanInstance = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(aduanCounts),
-          datasets: [{
-            label: 'Jumlah Aduan',
-            data: Object.values(aduanCounts),
-            backgroundColor: '#0d6efd'
-          }]
-        },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-        }
-      });
-    }
-  </script>
 </body>
 </html>
+
